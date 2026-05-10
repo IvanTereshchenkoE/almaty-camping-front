@@ -1,0 +1,1 @@
+export { TentDetailModal } from './TentDetailModal';

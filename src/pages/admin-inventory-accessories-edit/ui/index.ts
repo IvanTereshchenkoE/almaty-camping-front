@@ -1,0 +1,1 @@
+export { AccessoryEditPage } from './AccessoryEditPage';

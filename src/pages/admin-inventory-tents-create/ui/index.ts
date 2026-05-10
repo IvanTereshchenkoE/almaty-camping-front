@@ -1,0 +1,1 @@
+export { TentCreatePage } from './TentCreatePage';

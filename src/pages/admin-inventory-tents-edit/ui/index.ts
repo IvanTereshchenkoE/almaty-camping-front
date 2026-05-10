@@ -1,0 +1,1 @@
+export { TentEditPage } from './TentEditPage';

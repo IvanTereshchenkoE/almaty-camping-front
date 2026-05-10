@@ -1,0 +1,1 @@
+export { AdminInventoryTentsPage } from './AdminInventoryTentsPage';

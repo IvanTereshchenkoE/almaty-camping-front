@@ -1,0 +1,1 @@
+export { TentCard } from './TentCard';
