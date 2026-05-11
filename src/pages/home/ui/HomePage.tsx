@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useLocations } from '@/entities/location/model';
 import { ROUTES } from '@/shared/config';
@@ -6,26 +7,81 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/sha
 import { Badge } from '@/shared/ui/badge';
 import { MapPin, Car, Camera, Mountain, Loader2 } from 'lucide-react';
 
+/**
+ * Временно один файл для desktop и mobile. Позже — отдельные hero-desktop / hero-mobile + постеры в public/videos/.
+ */
+const HERO_VIDEO_SRC = '/videos/videoplayback.mp4';
+
 export const HomePage = () => {
   const { data: locations, isLoading } = useLocations();
+  const desktopVideoRef = useRef<HTMLVideoElement>(null);
+  const mobileVideoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const sync = () => {
+      for (const ref of [desktopVideoRef, mobileVideoRef]) {
+        const el = ref.current;
+        if (!el) continue;
+        if (mq.matches) {
+          el.pause();
+        } else {
+          void el.play().catch(() => {});
+        }
+      }
+    };
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-4rem)]">
-      {/* Hero */}
-      <section className="relative bg-gradient-to-br from-emerald-600 to-green-700 text-white">
-        <div className="mx-auto max-w-7xl px-4 py-24 md:py-32 md:px-6 text-center">
-          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl mb-6">
+      {/* Hero: фон — видео 21:9 (desktop) / отдельный ролик (mobile); поверх — затемнение + текст */}
+      <section className="relative isolate flex min-h-[min(85svh,720px)] flex-col md:min-h-0 md:aspect-[21/9] md:max-h-[min(85vh,960px)] overflow-hidden bg-emerald-900 text-white">
+        <div className="pointer-events-none absolute inset-0 z-0">
+          <video
+            ref={desktopVideoRef}
+            className="hidden md:block absolute inset-0 h-full w-full object-cover object-center"
+            src={HERO_VIDEO_SRC}
+            muted
+            loop
+            playsInline
+            autoPlay
+            preload="metadata"
+            aria-hidden
+          />
+          <video
+            ref={mobileVideoRef}
+            className="md:hidden absolute inset-0 h-full w-full object-cover object-center"
+            src={HERO_VIDEO_SRC}
+            muted
+            loop
+            playsInline
+            autoPlay
+            preload="metadata"
+            aria-hidden
+          />
+        </div>
+        <div
+          className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-br from-emerald-950/80 via-emerald-900/70 to-green-950/85"
+          aria-hidden
+        />
+        <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-4 py-24 text-center md:min-h-0 md:px-6 md:py-28">
+          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl mb-6 drop-shadow-sm">
             Кемпинг в Алматы — просто и удобно
           </h1>
-          <p className="mx-auto max-w-2xl text-lg md:text-xl text-white/90 mb-8">
+          <p className="mx-auto max-w-2xl text-lg md:text-xl text-white/95 mb-8 drop-shadow-sm">
             Мы не профессиональные альпинисты. Мы обычные люди, которые любят природу.
             Возьми палатку в аренду или купи свою — и отправляйся на выходные в горы.
           </p>
-          <Link to={ROUTES.CATALOG}>
-            <Button size="lg" variant="secondary" className="font-semibold">
-              Посмотреть палатки
-            </Button>
-          </Link>
+          <div>
+            <Link to={ROUTES.CATALOG}>
+              <Button size="lg" variant="secondary" className="font-semibold shadow-lg">
+                Посмотреть палатки
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 
