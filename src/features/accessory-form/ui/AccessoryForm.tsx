@@ -83,9 +83,12 @@ export const AccessoryForm = ({ mode, accessoryId }: Props) => {
     if (existing && mode === 'edit') {
       reset({
         name: existing.name,
-        accessoryBrandId: existing.brand?.id ?? '',
-        accessoryTypeDictId: existing.type?.id ?? '',
-        accessorySeasonId: existing.season?.id ?? '',
+        accessoryBrandId:
+          existing.accessoryBrandId ?? existing.brand?.id ?? '',
+        accessoryTypeDictId:
+          existing.accessoryTypeDictId ?? existing.type?.id ?? '',
+        accessorySeasonId:
+          existing.accessorySeasonId ?? existing.season?.id ?? '',
         categoryId: existing.categoryId,
         dailyPrice: existing.dailyPrice,
         shortDescription: existing.shortDescription,
@@ -98,14 +101,13 @@ export const AccessoryForm = ({ mode, accessoryId }: Props) => {
   }, [existing, mode, reset]);
 
   const onSubmit = async (data: FormData) => {
-    const payload = { ...data };
-    delete (payload as any).unitsCount;
+    const { unitsCount, ...payload } = data;
 
     if (mode === 'create') {
       const accessory = await create.mutateAsync(payload);
-      if (data.unitsCount > 0 && accessory?.id) {
+      if (unitsCount > 0 && accessory?.id) {
         await Promise.all(
-          Array.from({ length: data.unitsCount }).map((_, i) =>
+          Array.from({ length: unitsCount }).map((_, i) =>
             api.post(`/admin/accessories/${accessory.id}/units`, {
               inventoryCode: `ACC-${accessory.name.slice(0, 5).toUpperCase()}-${String(i + 1).padStart(3, '0')}`,
               status: 'AVAILABLE',

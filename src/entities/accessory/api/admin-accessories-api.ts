@@ -3,6 +3,9 @@ import { api } from '@/shared/api';
 export interface AdminAccessory {
   id: string;
   name: string;
+  accessoryBrandId: string | null;
+  accessoryTypeDictId: string | null;
+  accessorySeasonId: string | null;
   categoryId: string;
   dailyPrice: number;
   description: string;
@@ -13,8 +16,11 @@ export interface AdminAccessory {
   createdAt: string;
   updatedAt: string;
   units: { id: string; inventoryCode: string; status: string; conditionComment?: string }[];
-  tags: { tagId: string; tag: { id: string; name: string } }[];
+  tags?: { tagId: string; tag: { id: string; name: string } }[];
   category?: { id: string; name: string };
+  brand: { id: string; name: string } | null;
+  type: { id: string; name: string } | null;
+  season: { id: string; name: string } | null;
 }
 
 export const adminAccessoriesApi = {
