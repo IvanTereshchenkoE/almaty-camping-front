@@ -25,6 +25,9 @@ import { useQueryClient } from '@tanstack/react-query';
 
 const FALLBACK_IMAGE = 'https://placehold.co/400x300?text=No+Image';
 
+/** Radix Select.Item cannot use value="" — empty string is reserved for clearing selection */
+const OWNER_UNASSIGNED = '__owner_unassigned__';
+
 const statusLabels: Record<string, string> = {
   AVAILABLE: 'Доступна',
   DAMAGED: 'Повреждена',
@@ -313,12 +316,17 @@ export const AdminInventoryTentsPage = () => {
             </div>
             <div className="space-y-2">
               <Label>Владелец</Label>
-              <Select value={editOwnerId || ''} onValueChange={(v) => setEditOwnerId(v || undefined)}>
+              <Select
+                value={editOwnerId ?? OWNER_UNASSIGNED}
+                onValueChange={(v) =>
+                  setEditOwnerId(v === OWNER_UNASSIGNED ? undefined : v)
+                }
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Выберите владельца" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Не назначен</SelectItem>
+                  <SelectItem value={OWNER_UNASSIGNED}>Не назначен</SelectItem>
                   {users?.map((u) => (
                     <SelectItem key={u.id} value={u.id}>{u.name || u.email}</SelectItem>
                   ))}
