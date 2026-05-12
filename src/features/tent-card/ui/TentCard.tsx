@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import type { Tent } from '@/shared/types';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { useOrderStore } from '@/entities/order/model';
@@ -8,6 +7,7 @@ import { useAuthStore } from '@/entities/user/model';
 import { ROUTES } from '@/shared/config';
 import { API_BASE_URL } from '@/shared/api';
 import { cn } from '@/shared/lib/cn';
+import { Tent as TentIcon } from 'lucide-react';
 
 interface Props {
   tent: Tent & { totalQuantity?: number; availableQuantity?: number; isAvailable?: boolean };
@@ -32,74 +32,112 @@ export const TentCard = ({ tent, onClick }: Props) => {
       quantity: 1,
       dailyPriceSnapshot: price,
       totalPrice: price * days,
+      imageUrlSnapshot: tent.mainImage,
+      brandSnapshot: tent.brand?.name,
     });
     navigate(ROUTES.ORDER);
   };
 
   const imageSrc = tent.mainImage?.startsWith('/api/upload/')
     ? `${API_BASE_URL}${tent.mainImage}`
-    : (tent.mainImage || 'https://placehold.co/400x300?text=No+Image');
+    : (tent.mainImage || '');
+
+  const hasImage = !!imageSrc;
 
   return (
-    <Card
-      className={cn(
-        "overflow-hidden flex flex-col transition-shadow hover:shadow-md",
-        isUnavailable && "opacity-60",
-        onClick && "cursor-pointer"
-      )}
+    <article
       onClick={onClick}
+      className={cn(
+        'group flex h-full flex-col overflow-hidden rounded-[28px] border border-slate-200/80 bg-white shadow-sm',
+        'transition-all duration-300 ease-out transform-gpu',
+        'hover:-translate-y-1 hover:border-emerald-200 hover:shadow-[0_18px_50px_rgba(15,118,110,0.12)]',
+        'cursor-pointer'
+      )}
     >
-      <img
-        alt={tent.name}
-        src={imageSrc}
-        className="h-48 w-full object-cover"
-        onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/400x300?text=No+Image'; }}
-      />
-      <CardHeader className="pb-2">
-        <div className="flex items-start justify-between gap-2">
-          <CardTitle className="text-lg">{tent.name}</CardTitle>
-          {isUnavailable && (
-            <Badge variant="destructive">Нет в наличии</Badge>
-          )}
-          {!isUnavailable && tent.availableQuantity !== undefined && tent.availableQuantity < (tent.totalQuantity || 0) && (
-            <Badge variant="secondary">Осталось {tent.availableQuantity}</Badge>
-          )}
-          {!isUnavailable && tent.availableQuantity !== undefined && tent.availableQuantity === (tent.totalQuantity || 0) && tent.totalQuantity !== undefined && (
-            <Badge variant="outline" className="text-green-600 border-green-600">В наличии</Badge>
+      {/* Image */}
+      <div className="relative aspect-[16/10] overflow-hidden sm:aspect-[4/3]">
+        {hasImage ? (
+          <img
+            alt={tent.name}
+            src={imageSrc}
+            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+          />
+        ) : (
+          <div className="relative h-full w-full overflow-hidden bg-gradient-to-br from-emerald-100 via-stone-100 to-emerald-200">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.7),transparent_35%)]" />
+            <TentIcon className="absolute right-5 top-5 h-9 w-9 text-emerald-800/20" />
+            <div className="absolute inset-0 flex items-center justify-center px-6">
+              <span className="text-3xl font-bold text-emerald-950/20">
+                {tent.name.slice(0, 12)}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Status badge */}
+        <div className="absolute left-4 top-4 z-10">
+          {isUnavailable ? (
+            <Badge className="rounded-full bg-stone-100 text-stone-500 border-0 shadow-sm">
+              Нет в наличии
+            </Badge>
+          ) : (
+            <Badge className="rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 shadow-sm">
+              В наличии
+            </Badge>
           )}
         </div>
-        <p className="text-sm text-muted-foreground">{tent.brand?.name ?? '—'}</p>
-      </CardHeader>
-      <CardContent className="flex-1">
-        <div className="flex flex-wrap gap-2 mb-3">
-          <Badge variant="secondary">{tent.capacity} чел.</Badge>
-          <Badge variant="outline">{tent.season?.name ?? '—'}</Badge>
-          <Badge variant="outline">{tent.type?.name ?? '—'}</Badge>
-          <Badge variant="outline">{tent.weight} кг</Badge>
+      </div>
+
+      {/* Content */}
+      <div className="flex flex-1 flex-col p-5">
+        <h3 className="text-lg font-semibold tracking-tight text-slate-900 line-clamp-2 mb-1 group-hover:text-emerald-800 transition-colors">
+          {tent.name}
+        </h3>
+        <p className="text-sm text-emerald-900/55 mb-3">{tent.brand?.name ?? '—'}</p>
+
+        <div className="flex flex-wrap gap-1.5 mb-3">
+          <Badge variant="secondary" className="rounded-full bg-stone-100 text-slate-600 border border-emerald-900/10 font-normal text-xs">
+            {tent.capacity} чел.
+          </Badge>
+          <Badge variant="secondary" className="rounded-full bg-stone-100 text-slate-600 border border-emerald-900/10 font-normal text-xs">
+            {tent.season?.name ?? '—'}
+          </Badge>
+          <Badge variant="secondary" className="rounded-full bg-stone-100 text-slate-600 border border-emerald-900/10 font-normal text-xs">
+            {tent.type?.name ?? '—'}
+          </Badge>
+          <Badge variant="secondary" className="rounded-full bg-stone-100 text-slate-600 border border-emerald-900/10 font-normal text-xs">
+            {tent.weight} кг
+          </Badge>
         </div>
-        <p className="text-sm text-muted-foreground line-clamp-2">{tent.description}</p>
+
+        <p className="text-sm text-slate-500 truncate mb-4">
+          {tent.shortDescription || tent.description || 'Нет описания'}
+        </p>
+
         {tent.totalQuantity !== undefined && tent.availableQuantity !== undefined && (
-          <p className="text-xs text-muted-foreground mt-2">
-            Доступно: <span className="font-medium">{tent.availableQuantity}</span> из {tent.totalQuantity}
+          <p className="text-xs text-slate-400 mb-4">
+            Доступно: <span className="font-medium text-slate-600">{tent.availableQuantity}</span> из {tent.totalQuantity}
           </p>
         )}
-      </CardContent>
-      <CardFooter className="flex flex-wrap gap-2 pt-0">
-        {!isAdmin && (
-          <Button
-            variant={isUnavailable ? 'outline' : 'default'}
-            size="sm"
-            className="flex-1"
-            disabled={isUnavailable || !startDate || !endDate}
-            onClick={handleSelect}
-          >
-            {isUnavailable ? 'Недоступно' : 'Выбрать'}
-          </Button>
-        )}
-        <div className="text-sm font-medium w-full text-center">
-          {tent.dailyPrice != null ? `${tent.dailyPrice.toLocaleString()} ₸/сут` : '—'}
+
+        <div className="mt-auto flex items-center justify-between gap-3">
+          <span className="text-xl font-bold text-slate-900 whitespace-nowrap">
+            {tent.dailyPrice != null ? `${tent.dailyPrice.toLocaleString()} ₸/сутки` : '—'}
+          </span>
+          {!isAdmin && (
+            <Button
+              variant={isUnavailable ? 'outline' : 'default'}
+              size="sm"
+              disabled={isUnavailable || !startDate || !endDate}
+              onClick={handleSelect}
+              className="h-11 rounded-2xl px-5 whitespace-nowrap"
+            >
+              {isUnavailable ? 'Недоступно' : 'Выбрать'}
+            </Button>
+          )}
         </div>
-      </CardFooter>
-    </Card>
+      </div>
+    </article>
   );
 };

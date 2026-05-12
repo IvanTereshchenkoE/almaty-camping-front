@@ -1,16 +1,43 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOrderStore } from '@/entities/order/model';
-import { useCreateOrder } from '@/entities/order/model/use-order';
-import { addMyOrder } from '@/entities/order/lib/my-orders-storage';
+import { useCreateOrder } from '@/entities/order/model';
+import { addMyOrder } from '@/entities/order/lib';
 import { Button } from '@/shared/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { OrderLayout } from '@/features/order-layout/ui/OrderLayout';
+import { OrderSummaryCard } from '@/features/order-summary-card/ui/OrderSummaryCard';
+import { CalendarRange, User, Package } from 'lucide-react';
 import { ROUTES } from '@/shared/config';
 import { Loader2 } from 'lucide-react';
 
 export const OrderSummaryPage = () => {
   const navigate = useNavigate();
-  const { tentItem, accessories, clientName, phone, telegram, whatsapp, email, comment, startDate, endDate, rentalDays, getTotal, clear } = useOrderStore();
+  const {
+    tentItem,
+    accessories,
+    clientName,
+    phone,
+    telegram,
+    whatsapp,
+    email,
+    comment,
+    startDate,
+    endDate,
+    rentalDays,
+    getTotal,
+    clear,
+  } = useOrderStore();
   const createOrder = useCreateOrder();
+
+  useEffect(() => {
+    if (!tentItem) {
+      navigate(ROUTES.CATALOG);
+    }
+  }, [tentItem, navigate]);
+
+  if (!tentItem) return null;
+
+  const total = getTotal();
 
   const handleSubmit = async () => {
     const items = [];
@@ -31,7 +58,6 @@ export const OrderSummaryPage = () => {
       items,
     });
 
-    // Save to localStorage for "My Orders"
     addMyOrder({
       id: order.id,
       orderNumber: order.orderNumber,
@@ -41,61 +67,134 @@ export const OrderSummaryPage = () => {
       status: order.status,
       totalAmount: order.totalAmount,
     });
-
     clear();
-    navigate(ROUTES.ORDER_SUCCESS);
+    navigate(ROUTES.ORDER_SUCCESS, {
+      state: { orderNumber: order.orderNumber, totalAmount: order.totalAmount },
+    });
   };
 
-  if (!tentItem) {
-    return (
-      <div className="mx-auto max-w-7xl px-4 py-16 text-center">
-        <h2 className="text-2xl font-bold mb-4">Сначала выберите палатку</h2>
-        <Button onClick={() => navigate(ROUTES.CATALOG)}>В каталог</Button>
-      </div>
-    );
-  }
-
   return (
-    <div className="mx-auto max-w-xl px-4 py-8 md:px-6">
-      <h2 className="text-3xl font-bold tracking-tight mb-8">Подтверждение заказа</h2>
-      <Card>
-        <CardHeader>
-          <CardTitle>Сводка</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="text-sm text-muted-foreground">{startDate} — {endDate} ({rentalDays} сут)</div>
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span>{tentItem.nameSnapshot}</span>
-              <span>{tentItem.totalPrice.toLocaleString()} ₸</span>
-            </div>
-            {accessories.map((a) => (
-              <div key={a.itemId} className="flex justify-between text-sm">
-                <span>{a.nameSnapshot} × {a.quantity}</span>
-                <span>{a.totalPrice.toLocaleString()} ₸</span>
+    <OrderLayout currentStep={2}>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-[1fr_380px] md:gap-8">
+        {/* Review */}
+        <div className="space-y-5">
+          <div className="rounded-[28px] border border-emerald-900/10 bg-white p-5 shadow-sm md:p-8">
+            <h2 className="text-xl font-bold tracking-tight text-slate-900 mb-6">
+              Проверьте данные
+            </h2>
+
+            {/* Dates */}
+            <div className="mb-5 flex items-center gap-3 rounded-xl bg-stone-50 p-4">
+              <CalendarRange className="h-5 w-5 text-slate-400 shrink-0" />
+              <div>
+                <p className="text-sm font-medium text-slate-700">
+                  {startDate} — {endDate}
+                </p>
+                <p className="text-xs text-slate-500">
+                  {rentalDays} {rentalDays === 1 ? 'сутки' : rentalDays < 5 ? 'суток' : 'суток'}
+                </p>
               </div>
-            ))}
+            </div>
+
+            {/* Items */}
+            <div className="mb-5 space-y-3">
+              <h3 className="text-sm font-semibold text-slate-900">Состав заказа</h3>
+              <div className="divide-y divide-slate-100">
+                <div className="flex items-center justify-between py-3">
+                  <div className="flex items-center gap-3">
+                    <Package className="h-4 w-4 text-slate-400" />
+                    <span className="text-sm text-slate-700">{tentItem.nameSnapshot}</span>
+                  </div>
+                  <span className="text-sm font-medium text-slate-900">{tentItem.totalPrice.toLocaleString()} ₸</span>
+                </div>
+                {accessories.map((acc) => (
+                  <div key={acc.itemId} className="flex items-center justify-between py-3">
+                    <div className="flex items-center gap-3">
+                      <Package className="h-4 w-4 text-slate-400" />
+                      <span className="text-sm text-slate-700">
+                        {acc.nameSnapshot} × {acc.quantity}
+                      </span>
+                    </div>
+                    <span className="text-sm font-medium text-slate-900">{acc.totalPrice.toLocaleString()} ₸</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Contacts */}
+            <div className="mb-5">
+              <h3 className="text-sm font-semibold text-slate-900 mb-3">Контакты</h3>
+              <div className="space-y-2 rounded-xl bg-stone-50 p-4">
+                <div className="flex items-center gap-3">
+                  <User className="h-4 w-4 text-slate-400 shrink-0" />
+                  <span className="text-sm text-slate-700">{clientName}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-slate-500 w-20">Телефон</span>
+                  <span className="text-sm text-slate-700">{phone}</span>
+                </div>
+                {telegram && (
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-slate-500 w-20">Telegram</span>
+                    <span className="text-sm text-slate-700">{telegram}</span>
+                  </div>
+                )}
+                {whatsapp && (
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-slate-500 w-20">WhatsApp</span>
+                    <span className="text-sm text-slate-700">{whatsapp}</span>
+                  </div>
+                )}
+                {email && (
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-slate-500 w-20">Email</span>
+                    <span className="text-sm text-slate-700">{email}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {comment && (
+              <div className="mb-5">
+                <h3 className="text-sm font-semibold text-slate-900 mb-2">Комментарий</h3>
+                <p className="text-sm text-slate-600 rounded-xl bg-stone-50 p-4">{comment}</p>
+              </div>
+            )}
+
+            <div className="flex gap-3 pt-2">
+              <Button
+                variant="outline"
+                onClick={() => navigate(ROUTES.ORDER_CONTACTS)}
+                className="h-12 flex-1 rounded-2xl border-emerald-900/10"
+              >
+                Назад
+              </Button>
+              <Button
+                onClick={handleSubmit}
+                disabled={createOrder.isPending}
+                className="h-12 flex-1 rounded-2xl bg-emerald-700 hover:bg-emerald-800"
+              >
+                {createOrder.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Отправить заказ
+              </Button>
+            </div>
           </div>
-          <div className="border-t pt-4 flex justify-between font-bold text-lg">
-            <span>Итого</span>
-            <span>{getTotal().toLocaleString()} ₸</span>
+        </div>
+
+        {/* Desktop summary */}
+        <div className="hidden md:block">
+          <div className="sticky top-24">
+            <OrderSummaryCard
+              startDate={startDate}
+              endDate={endDate}
+              rentalDays={rentalDays}
+              tentItem={tentItem}
+              accessories={accessories}
+              total={total}
+            />
           </div>
-          <div className="border-t pt-4 space-y-1 text-sm">
-            <p><span className="text-muted-foreground">Имя:</span> {clientName}</p>
-            <p><span className="text-muted-foreground">Телефон:</span> {phone}</p>
-            {telegram && <p><span className="text-muted-foreground">Telegram:</span> {telegram}</p>}
-            {whatsapp && <p><span className="text-muted-foreground">WhatsApp:</span> {whatsapp}</p>}
-            {email && <p><span className="text-muted-foreground">Email:</span> {email}</p>}
-            {comment && <p><span className="text-muted-foreground">Комментарий:</span> {comment}</p>}
-          </div>
-          <div className="flex gap-2 pt-2">
-            <Button variant="outline" className="flex-1" onClick={() => navigate(ROUTES.ORDER_CONTACTS)}>Назад</Button>
-            <Button className="flex-1" onClick={handleSubmit} disabled={createOrder.isPending}>
-              {createOrder.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Отправить заявку'}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      </div>
+    </OrderLayout>
   );
 };
