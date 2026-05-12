@@ -1,4 +1,4 @@
-import { MapPin, Mountain, ArrowRight } from 'lucide-react';
+import { MapPin, Mountain, ArrowRight, Pencil } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { cn } from '@/shared/lib/cn';
 import type { Location } from '@/shared/types';
@@ -6,11 +6,12 @@ import type { Location } from '@/shared/types';
 interface LocationCardProps {
   location: Location;
   onClick: () => void;
+  onEdit?: () => void;
   index: number;
   isVisible: boolean;
 }
 
-export function LocationCard({ location, onClick, index, isVisible }: LocationCardProps) {
+export function LocationCard({ location, onClick, onEdit, index, isVisible }: LocationCardProps) {
   const hasImage = !!location.imageUrl;
 
   return (
@@ -19,7 +20,7 @@ export function LocationCard({ location, onClick, index, isVisible }: LocationCa
       className={cn(
         'group relative isolate w-full text-left overflow-hidden rounded-[28px]',
         'border border-slate-200/80 bg-white shadow-sm',
-        'transition-all duration-300 ease-out',
+        'transition-all duration-300 ease-out transform-gpu',
         'hover:-translate-y-1 hover:border-emerald-200 hover:shadow-[0_18px_50px_rgba(15,118,110,0.12)]',
         'active:scale-[0.99]',
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
@@ -57,6 +58,21 @@ export function LocationCard({ location, onClick, index, isVisible }: LocationCa
             {location.distanceFromAlmatyKm} км
           </Badge>
         </div>
+
+        {/* Admin edit button */}
+        {onEdit && (
+          <div
+            className="absolute right-4 top-4 z-20 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit();
+            }}
+          >
+            <div className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg bg-slate-100/90 text-slate-600 backdrop-blur-sm border border-slate-200 shadow-sm transition-colors hover:bg-slate-200 hover:text-slate-900">
+              <Pencil className="h-4 w-4" />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Content */}
@@ -64,7 +80,7 @@ export function LocationCard({ location, onClick, index, isVisible }: LocationCa
         <h3 className="text-lg font-semibold tracking-tight text-slate-900 mb-1 transition-colors group-hover:text-emerald-800">
           {location.name}
         </h3>
-        <p className="text-sm text-slate-500 line-clamp-2 mb-4">{location.description}</p>
+        <p className="text-sm text-slate-500 truncate mb-4">{location.description}</p>
 
         <div className="flex items-center justify-between">
           <div className="flex flex-wrap gap-1.5">

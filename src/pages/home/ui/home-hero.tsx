@@ -4,7 +4,7 @@ import { ROUTES } from '@/shared/config';
 import { Button } from '@/shared/ui/button';
 import { Badge } from '@/shared/ui/badge';
 import { MapPin, Truck, ShieldCheck, Smartphone } from 'lucide-react';
-import { cn } from '@/shared/lib/cn';
+
 
 const HERO_VIDEO_SRC = '/videos/videoplayback.mp4';
 
