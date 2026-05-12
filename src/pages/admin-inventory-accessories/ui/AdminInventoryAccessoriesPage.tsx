@@ -121,7 +121,7 @@ export const AdminInventoryAccessoriesPage = () => {
                       </Badge>
                     </div>
                     <div className="text-sm space-y-1 mb-4">
-                      <p><span className="text-muted-foreground">Цена:</span> {acc.dailyPrice.toLocaleString()} ₸/сут</p>
+                      <p><span className="text-muted-foreground">Цена:</span> {acc.dailyPrice.toLocaleString()} ₸/сутки</p>
                       <p><span className="text-muted-foreground">Единиц:</span> {acc.units.length}</p>
                     </div>
                     <div className="flex gap-2">

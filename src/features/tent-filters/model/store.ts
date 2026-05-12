@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 
+export type SortOption = 'availability' | 'price_asc' | 'price_desc' | 'capacity' | 'weight';
+
 export interface TentFiltersState {
   minPrice?: number;
   maxPrice?: number;
@@ -8,8 +10,7 @@ export interface TentFiltersState {
   type: string[];
   maxWeight?: number;
   brand: string[];
-  availableForRent: boolean;
-  availableForSale: boolean;
+  sort: SortOption;
   setMinPrice: (v?: number) => void;
   setMaxPrice: (v?: number) => void;
   toggleCapacity: (v: number) => void;
@@ -17,8 +18,7 @@ export interface TentFiltersState {
   toggleType: (v: string) => void;
   setMaxWeight: (v?: number) => void;
   toggleBrand: (v: string) => void;
-  toggleRent: () => void;
-  toggleSale: () => void;
+  setSort: (v: SortOption) => void;
   reset: () => void;
 }
 
@@ -27,8 +27,7 @@ const initial = {
   season: [] as string[],
   type: [] as string[],
   brand: [] as string[],
-  availableForRent: false,
-  availableForSale: false,
+  sort: 'availability' as SortOption,
 };
 
 export const useTentFiltersStore = create<TentFiltersState>((set) => ({
@@ -52,7 +51,6 @@ export const useTentFiltersStore = create<TentFiltersState>((set) => ({
     set((s) => ({
       brand: s.brand.includes(v) ? s.brand.filter((c) => c !== v) : [...s.brand, v],
     })),
-  toggleRent: () => set((s) => ({ availableForRent: !s.availableForRent })),
-  toggleSale: () => set((s) => ({ availableForSale: !s.availableForSale })),
+  setSort: (v) => set({ sort: v }),
   reset: () => set(initial),
 }));

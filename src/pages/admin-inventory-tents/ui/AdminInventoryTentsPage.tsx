@@ -215,7 +215,7 @@ export const AdminInventoryTentsPage = () => {
                       </Badge>
                     </div>
                     <div className="text-sm space-y-1 mb-4">
-                      <p><span className="text-muted-foreground">Цена:</span> {tent.dailyPrice.toLocaleString()} ₸/сут</p>
+                      <p><span className="text-muted-foreground">Цена:</span> {tent.dailyPrice.toLocaleString()} ₸/сутки</p>
                       <p><span className="text-muted-foreground">Единиц на складе:</span> {tent.units?.length || 0} <span className="text-green-600">({availableCount} доступно)</span></p>
                       <p><span className="text-muted-foreground">Вес:</span> {tent.weight} кг</p>
                     </div>

@@ -1,167 +1,168 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOrderStore } from '@/entities/order/model';
-import { useAvailableAccessories } from '@/entities/accessory/model/use-accessories';
+import { useAvailableAccessories } from '@/entities/accessory/model';
 import { Button } from '@/shared/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { OrderLayout } from '@/features/order-layout/ui/OrderLayout';
+import { OrderSummaryCard } from '@/features/order-summary-card/ui/OrderSummaryCard';
+import { SelectedTentCard } from '@/features/selected-tent-card/ui/SelectedTentCard';
+import { AccessoryCard } from '@/features/accessory-card/ui/AccessoryCard';
+import { PackageOpen } from 'lucide-react';
 import { ROUTES } from '@/shared/config';
-import { Loader2, Minus, Plus, Trash2 } from 'lucide-react';
 
 export const OrderPage = () => {
   const navigate = useNavigate();
-  const { tentItem, accessories, startDate, endDate, rentalDays, addAccessory, removeAccessory, setTent } = useOrderStore();
+  const {
+    tentItem,
+    accessories,
+    startDate,
+    endDate,
+    rentalDays,
+    addAccessory,
+    removeAccessory,
+    setTent,
+    getTotal,
+  } = useOrderStore();
+
   const { data: availableAccessories, isLoading } = useAvailableAccessories(startDate, endDate);
 
-  if (!tentItem) {
-    return (
-      <div className="mx-auto max-w-7xl px-4 py-16 text-center">
-        <h2 className="text-2xl font-bold mb-4">Сначала выберите палатку</h2>
-        <Button onClick={() => navigate(ROUTES.CATALOG)}>В каталог</Button>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (!tentItem) {
+      navigate(ROUTES.CATALOG);
+    }
+  }, [tentItem, navigate]);
+
+  if (!tentItem) return null;
+
+  const handleAddAccessory = (acc: any) => {
+    addAccessory({
+      itemType: 'accessory',
+      itemId: acc.id,
+      nameSnapshot: acc.name,
+      quantity: 1,
+      dailyPriceSnapshot: acc.dailyPrice,
+      totalPrice: acc.dailyPrice * rentalDays,
+      imageUrlSnapshot: acc.mainImage,
+    });
+  };
+
+  const handleIncrement = (acc: any) => {
+    const existing = accessories.find((a) => a.itemId === acc.id);
+    if (!existing) return;
+    const newQty = existing.quantity + 1;
+    addAccessory({
+      ...existing,
+      quantity: newQty,
+      totalPrice: existing.dailyPriceSnapshot * newQty * rentalDays,
+    });
+  };
+
+  const handleDecrement = (acc: any) => {
+    const existing = accessories.find((a) => a.itemId === acc.id);
+    if (!existing) return;
+    const newQty = existing.quantity - 1;
+    if (newQty <= 0) {
+      removeAccessory(acc.id);
+    } else {
+      addAccessory({
+        ...existing,
+        quantity: newQty,
+        totalPrice: existing.dailyPriceSnapshot * newQty * rentalDays,
+      });
+    }
+  };
+
+  const total = getTotal();
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 md:px-6">
-      <h2 className="text-3xl font-bold tracking-tight mb-8">Конфигурация заказа</h2>
-
-      <div className="grid gap-8 lg:grid-cols-2">
+    <OrderLayout currentStep={0}>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-[1fr_380px] md:gap-8">
+        {/* Main content */}
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Выбранная палатка</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">{tentItem.nameSnapshot}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {tentItem.dailyPriceSnapshot.toLocaleString()} ₸ × {rentalDays} сут = {tentItem.totalPrice.toLocaleString()} ₸
-                  </p>
-                </div>
-                <Button variant="ghost" size="icon" onClick={() => setTent(null)}>
-                  <Trash2 className="h-4 w-4 text-destructive" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <SelectedTentCard
+            tentItem={tentItem}
+            rentalDays={rentalDays}
+            onRemove={() => setTent(null)}
+          />
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Дополнительное оборудование</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <Loader2 className="h-6 w-6 animate-spin" />
-              ) : (
-                <div className="space-y-3">
-                  {(availableAccessories || []).map((acc: any) => {
-                    const existing = accessories.find((a) => a.itemId === acc.id);
-                    const maxQty = acc.availableQuantity || acc.totalQuantity || 0;
-                    return (
-                      <div key={acc.id} className="flex items-center justify-between border rounded-md p-3">
-                        <div>
-                          <p className="font-medium">{acc.name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {acc.dailyPrice.toLocaleString()} ₸/сут · Доступно: {maxQty}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {existing ? (
-                            <>
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8"
-                                onClick={() => {
-                                  if (existing.quantity <= 1) removeAccessory(acc.id);
-                                  else {
-                                    addAccessory({
-                                      ...existing,
-                                      quantity: existing.quantity - 1,
-                                      totalPrice: (existing.quantity - 1) * existing.dailyPriceSnapshot * rentalDays,
-                                    });
-                                  }
-                                }}
-                              >
-                                <Minus className="h-3 w-3" />
-                              </Button>
-                              <span className="w-6 text-center text-sm">{existing.quantity}</span>
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8"
-                                disabled={existing.quantity >= maxQty}
-                                onClick={() => {
-                                  addAccessory({
-                                    ...existing,
-                                    quantity: existing.quantity + 1,
-                                    totalPrice: (existing.quantity + 1) * existing.dailyPriceSnapshot * rentalDays,
-                                  });
-                                }}
-                              >
-                                <Plus className="h-3 w-3" />
-                              </Button>
-                            </>
-                          ) : (
-                            <Button
-                              size="sm"
-                              onClick={() =>
-                                addAccessory({
-                                  itemType: 'accessory',
-                                  itemId: acc.id,
-                                  nameSnapshot: acc.name,
-                                  quantity: 1,
-                                  dailyPriceSnapshot: acc.dailyPrice,
-                                  totalPrice: acc.dailyPrice * rentalDays,
-                                })
-                              }
-                              disabled={maxQty <= 0}
-                            >
-                              Добавить
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        <div>
-          <Card className="sticky top-24">
-            <CardHeader>
-              <CardTitle>Ваш заказ</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="text-sm text-muted-foreground">
-                {startDate} — {endDate} ({rentalDays} сут)
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>{tentItem.nameSnapshot}</span>
-                  <span>{tentItem.totalPrice.toLocaleString()} ₸</span>
-                </div>
-                {accessories.map((a) => (
-                  <div key={a.itemId} className="flex justify-between text-sm">
-                    <span>{a.nameSnapshot} × {a.quantity}</span>
-                    <span>{a.totalPrice.toLocaleString()} ₸</span>
-                  </div>
+          <div>
+            <h3 className="text-base font-semibold text-slate-900 mb-3">Дополнительное оборудование</h3>
+            {isLoading ? (
+              <div className="space-y-3">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="h-20 animate-pulse rounded-2xl bg-stone-100" />
                 ))}
               </div>
-              <div className="border-t pt-4 flex justify-between font-bold text-lg">
-                <span>Итого</span>
-                <span>{useOrderStore.getState().getTotal().toLocaleString()} ₸</span>
+            ) : availableAccessories && availableAccessories.length > 0 ? (
+              <div className="space-y-3">
+                {availableAccessories.map((acc: any) => {
+                  const existing = accessories.find((a) => a.itemId === acc.id);
+                  return (
+                    <AccessoryCard
+                      key={acc.id}
+                      name={acc.name}
+                      dailyPrice={acc.dailyPrice}
+                      availableQuantity={acc.availableQuantity ?? acc.totalQuantity ?? 0}
+                      totalQuantity={acc.totalQuantity ?? 0}
+                      mainImage={acc.mainImage}
+                      quantity={existing?.quantity ?? 0}
+                      onAdd={() => handleAddAccessory(acc)}
+                      onIncrement={() => handleIncrement(acc)}
+                      onDecrement={() => handleDecrement(acc)}
+                    />
+                  );
+                })}
               </div>
-              <Button className="w-full" onClick={() => navigate(ROUTES.ORDER_CONTACTS)}>
-                Продолжить
-              </Button>
-            </CardContent>
-          </Card>
+            ) : (
+              <div className="flex flex-col items-center rounded-2xl border border-emerald-900/10 bg-white py-12 text-center">
+                <PackageOpen className="h-10 w-10 text-slate-300 mb-3" />
+                <p className="text-sm text-slate-500">Нет доступного оборудования на выбранные даты</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Desktop summary */}
+        <div className="hidden md:block">
+          <div className="sticky top-24">
+            <OrderSummaryCard
+              startDate={startDate}
+              endDate={endDate}
+              rentalDays={rentalDays}
+              tentItem={tentItem}
+              accessories={accessories}
+              total={total}
+              actionButton={
+                <Button
+                  onClick={() => navigate(ROUTES.ORDER_CONTACTS)}
+                  className="h-12 w-full rounded-2xl bg-emerald-700 hover:bg-emerald-800"
+                >
+                  Продолжить
+                </Button>
+              }
+            />
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Mobile sticky bottom */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200 bg-white/95 backdrop-blur px-4 py-3">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-xs text-slate-500">Итого</p>
+            <p className="text-lg font-bold text-slate-900">{total.toLocaleString()} ₸</p>
+          </div>
+          <Button
+            onClick={() => navigate(ROUTES.ORDER_CONTACTS)}
+            className="h-11 rounded-2xl bg-emerald-700 px-6 hover:bg-emerald-800"
+          >
+            Продолжить
+          </Button>
+        </div>
+      </div>
+
+      {/* Safe area spacer for mobile footer */}
+      <div className="md:hidden h-20" />
+    </OrderLayout>
   );
 };

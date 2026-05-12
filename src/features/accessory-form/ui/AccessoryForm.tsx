@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -78,6 +78,7 @@ export const AccessoryForm = ({ mode, accessoryId }: Props) => {
   const accessoryBrandId = watch('accessoryBrandId');
   const accessoryTypeDictId = watch('accessoryTypeDictId');
   const accessorySeasonId = watch('accessorySeasonId');
+  const [images, setImages] = useState<string[]>([]);
 
   useEffect(() => {
     if (existing && mode === 'edit') {
@@ -97,11 +98,13 @@ export const AccessoryForm = ({ mode, accessoryId }: Props) => {
         isActive: existing.isActive,
         unitsCount: 0,
       });
+      setImages(Array.isArray(existing.images) ? existing.images : []);
     }
   }, [existing, mode, reset]);
 
   const onSubmit = async (data: FormData) => {
-    const { unitsCount, ...payload } = data;
+    const { unitsCount, ...rest } = data;
+    const payload = { ...rest, images };
 
     if (mode === 'create') {
       const accessory = await create.mutateAsync(payload);
@@ -231,10 +234,38 @@ export const AccessoryForm = ({ mode, accessoryId }: Props) => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Изображение</CardTitle>
+          <CardTitle>Изображения</CardTitle>
         </CardHeader>
-        <CardContent>
-          <ImageUpload value={mainImage} onChange={(url) => setValue('mainImage', url)} />
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <Label>Главное изображение</Label>
+            <ImageUpload value={mainImage} onChange={(url) => setValue('mainImage', url)} />
+          </div>
+
+          <div className="space-y-3">
+            <Label>Дополнительные фотографии</Label>
+            <div className="flex flex-wrap gap-3">
+              {images.map((img, i) => (
+                <div key={i} className="relative h-20 w-20 overflow-hidden rounded-lg border">
+                  <img src={img} alt="" className="h-full w-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setImages((prev) => prev.filter((_, idx) => idx !== i))}
+                    className="absolute right-0.5 top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-[10px] text-white shadow"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+              <div className="h-20 w-20">
+                <ImageUpload
+                  value=""
+                  onChange={(url) => setImages((prev) => [...prev, url])}
+                  className="h-full"
+                />
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
 

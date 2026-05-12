@@ -8,6 +8,8 @@ export interface OrderItem {
   quantity: number;
   dailyPriceSnapshot: number;
   totalPrice: number;
+  imageUrlSnapshot?: string;
+  brandSnapshot?: string;
 }
 
 interface OrderState {
