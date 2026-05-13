@@ -95,7 +95,7 @@ export function HomeHero() {
           </Badge>
 
           <h1 className="max-w-4xl text-4xl font-extrabold leading-[0.95] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-            Кемпинг в Алматы —
+            Кемпинг в Алматы
             <br />
             <span className="text-emerald-300">просто и удобно</span>
           </h1>
@@ -127,11 +127,11 @@ export function HomeHero() {
         </div>
 
         {/* Metrics */}
-        <div className="mt-12 grid grid-cols-2 gap-3 md:mt-16 md:flex md:justify-center md:gap-4">
+        <div className="mx-auto mt-12 grid grid-cols-2 gap-3 md:mt-16 md:max-w-3xl md:grid-cols-4 md:gap-4">
           {METRICS.map((m) => (
             <div
               key={m.label}
-              className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur-sm md:px-5 md:py-3.5"
+              className="flex items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur-sm md:px-5 md:py-3.5"
             >
               <m.icon className="h-5 w-5 shrink-0 text-emerald-300" />
               <div className="text-left">

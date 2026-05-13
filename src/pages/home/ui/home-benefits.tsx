@@ -36,12 +36,14 @@ function BenefitCard({ item, index }: { item: typeof BENEFITS[0]; index: number 
       )}
       style={{ transitionDelay: `${index * 80}ms` }}
     >
-      <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 transition-colors group-hover:bg-emerald-100">
-        <item.icon className="h-6 w-6" strokeWidth={1.8} />
+      <div className="mb-3 flex items-center gap-3">
+        <div className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 transition-colors group-hover:bg-emerald-100">
+          <item.icon className="h-6 w-6" strokeWidth={1.8} />
+        </div>
+        <h3 className="text-lg font-semibold tracking-tight text-slate-900">
+          {item.title}
+        </h3>
       </div>
-      <h3 className="text-lg font-semibold tracking-tight text-slate-900 mb-2">
-        {item.title}
-      </h3>
       <p className="text-sm leading-relaxed text-slate-500">{item.desc}</p>
     </div>
   );
