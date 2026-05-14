@@ -10,7 +10,7 @@ const LANGUAGES: { code: Language; native: string }[] = [
   { code: 'en', native: 'EN' },
 ];
 
-export const LanguageSwitcher = () => {
+export const LanguageSwitcher = ({ mobileOnly = false, desktopOnly = false }: { mobileOnly?: boolean; desktopOnly?: boolean }) => {
   const { t } = useTranslation('admin');
   const { language, setLanguage } = useLanguageStore();
   const [open, setOpen] = useState(false);
@@ -29,8 +29,35 @@ export const LanguageSwitcher = () => {
 
   const current = LANGUAGES.find((l) => l.code === language) || LANGUAGES[0];
 
+  // Mobile inline buttons
+  if (!desktopOnly) {
+    return (
+      <div className={cn('md:hidden', mobileOnly ? 'block' : 'block')}>
+        <div className="flex items-center gap-1">
+          {LANGUAGES.map((lang) => (
+            <button
+              key={lang.code}
+              onClick={() => setLanguage(lang.code)}
+              className={cn(
+                'px-2.5 py-1 text-xs font-semibold uppercase tracking-wide rounded-md transition-colors',
+                language === lang.code
+                  ? 'bg-emerald-700 text-white'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              )}
+            >
+              {lang.native}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop dropdown
+  if (mobileOnly) return null;
+
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative hidden md:block">
       <button
         onClick={() => setOpen(!open)}
         className={cn(

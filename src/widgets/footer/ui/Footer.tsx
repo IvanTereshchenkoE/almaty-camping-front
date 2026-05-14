@@ -1,4 +1,5 @@
 import { Tent, Phone, Mail, MapPin, Clock, ArrowUpRight, LogIn, LogOut } from 'lucide-react';
+import { LanguageSwitcher } from '@/features/language-switcher/ui/LanguageSwitcher';
 import { Link, useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/shared/config';
 import { useAuthStore } from '@/entities/user/model';
@@ -55,6 +56,9 @@ export const Footer = () => {
             <h3 className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-4">
               {t('footer.contacts')}
             </h3>
+            <div className="mb-4">
+              <LanguageSwitcher mobileOnly />
+            </div>
             <ul className="space-y-3 text-sm text-white/70">
               <li className="flex items-start gap-2.5">
                 <MapPin className="h-4 w-4 shrink-0 mt-0.5 text-emerald-400" />

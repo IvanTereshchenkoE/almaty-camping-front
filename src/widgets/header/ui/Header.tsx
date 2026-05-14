@@ -112,7 +112,7 @@ export const Header = () => {
           <div className={cn(
             mobileBP === 'xl' ? 'hidden xl:flex' : 'hidden md:flex'
           )}>
-            <LanguageSwitcher />
+            <LanguageSwitcher desktopOnly />
           </div>
 
           {isAdmin && isAuth && (
