@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { AppProviders } from './providers';
 import { App } from './App';
 import { useAuthStore } from '@/entities/user/model';
+import '@/shared/lib/i18n';
 import './styles/index.css';
 
 // Init auth before render

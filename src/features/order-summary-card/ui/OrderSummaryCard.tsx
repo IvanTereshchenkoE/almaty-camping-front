@@ -2,6 +2,7 @@ import { CalendarRange, Tent, Package, Trash2 } from 'lucide-react';
 import { cn } from '@/shared/lib/cn';
 import { API_BASE_URL } from '@/shared/api';
 import type { OrderItem } from '@/entities/order/model';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   startDate: string;
@@ -28,6 +29,12 @@ export const OrderSummaryCard = ({
   actionButton,
   className,
 }: Props) => {
+  const { t } = useTranslation('order');
+
+  const dayLabel = rentalDays === 1 ? t('summaryPage.day_one')
+    : rentalDays < 5 ? t('summaryPage.day_few')
+    : t('summaryPage.day_many');
+
   return (
     <div
       className={cn(
@@ -36,9 +43,8 @@ export const OrderSummaryCard = ({
       )}
     >
       <div className="p-5 md:p-6">
-        <h3 className="text-base font-semibold text-slate-900 mb-4">Ваш заказ</h3>
+        <h3 className="text-base font-semibold text-slate-900 mb-4">{t('summaryCard.yourOrder')}</h3>
 
-        {/* Dates */}
         <div className="flex items-center gap-3 rounded-xl bg-stone-50 p-3 mb-4">
           <CalendarRange className="h-4 w-4 text-slate-400 shrink-0" />
           <div>
@@ -46,12 +52,11 @@ export const OrderSummaryCard = ({
               {startDate} — {endDate}
             </p>
             <p className="text-xs text-slate-500">
-              {rentalDays} {rentalDays === 1 ? 'сутки' : rentalDays < 5 ? 'суток' : 'суток'}
+              {rentalDays} {dayLabel}
             </p>
           </div>
         </div>
 
-        {/* Tent */}
         {tentItem && (
           <div className="flex items-start gap-3 mb-4 pb-4 border-b border-slate-100">
             <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-stone-100">
@@ -83,7 +88,6 @@ export const OrderSummaryCard = ({
           </div>
         )}
 
-        {/* Accessories */}
         {accessories.length > 0 && (
           <div className="space-y-3 mb-4 pb-4 border-b border-slate-100">
             {accessories.map((acc) => (
@@ -111,9 +115,8 @@ export const OrderSummaryCard = ({
           </div>
         )}
 
-        {/* Total */}
         <div className="flex items-center justify-between">
-          <span className="text-sm text-slate-500">Итого</span>
+          <span className="text-sm text-slate-500">{t('summaryCard.total')}</span>
           <span className="text-xl font-bold text-slate-900">{total.toLocaleString()} ₸</span>
         </div>
 

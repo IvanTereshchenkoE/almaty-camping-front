@@ -1,0 +1,76 @@
+{
+  "stepper": {
+    "equipment": "Жабдықтар",
+    "contacts": "Байланыс",
+    "review": "Тексеру",
+    "done": "Дайын"
+  },
+  "orderPage": {
+    "accessoriesTitle": "Қосымша жабдық",
+    "noAccessories": "Таңдалған күндерге қол жетімді жабдық жоқ",
+    "total": "Барлығы",
+    "continue": "Жалғастыру"
+  },
+  "contactsPage": {
+    "title": "Байланыс деректері",
+    "subtitle": "Тапсырысты растау үшін сізбен байланысу үшін деректерді көрсетіңіз",
+    "back": "Артқа",
+    "next": "Келесі"
+  },
+  "summaryPage": {
+    "title": "Деректерді тексеріңіз",
+    "dates": "Күндер",
+    "composition": "Тапсырыс құрамы",
+    "contacts": "Байланыс",
+    "phone": "Телефон",
+    "telegram": "Telegram",
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "comment": "Пікір",
+    "back": "Артқа",
+    "submit": "Тапсырыс жіберу",
+    "day_one": "тәулік",
+    "day_few": "тәулік",
+    "day_many": "тәулік"
+  },
+  "successPage": {
+    "title": "Өтініш жіберілді",
+    "message": "Жалға алу мәліметтерін растау үшін сізбен жақын уақытта байланысамыз.",
+    "orderNumber": "Тапсырыс нөмірі",
+    "total": "Барлығы",
+    "myOrders": "Менің тапсырыстарым",
+    "home": "Басты бетке"
+  },
+  "contactForm": {
+    "name": "Аты",
+    "namePlaceholder": "Қалай хабарласу керек",
+    "phone": "Телефон",
+    "phonePlaceholder": "+7 (___) ___-__-__",
+    "telegram": "Telegram",
+    "telegramPlaceholder": "@username",
+    "whatsapp": "WhatsApp",
+    "whatsappPlaceholder": "+7 (___) ___-__-__",
+    "email": "Email",
+    "emailPlaceholder": "email@example.com",
+    "comment": "Пікір",
+    "commentPlaceholder": "Қосымша тілектер",
+    "required": "Міндетті өріс",
+    "invalidPhone": "Дұрыс телефон нөмірін енгізіңіз"
+  },
+  "summaryCard": {
+    "yourOrder": "Сіздің тапсырысыңыз",
+    "rentalDays": "{{count}} {{unit}}",
+    "rentalTotal": "Жалға алудың барлығы",
+    "tent": "Шатыр",
+    "accessories": "Қосымша",
+    "total": "Барлығы",
+    "remove": "Жою"
+  },
+  "stepper": {
+    "step": "Қадам",
+    "equipment": "Жабдықтар",
+    "contacts": "Байланыс",
+    "review": "Тексеру",
+    "done": "Дайын"
+  }
+}

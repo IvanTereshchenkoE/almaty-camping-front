@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -21,19 +22,26 @@ import { useAccessoryTypes } from '@/entities/accessory-type/model/use-accessory
 import { useAccessorySeasons } from '@/entities/accessory-season/model/use-accessory-seasons';
 import { useAccessoryCategories } from '@/entities/accessory-category/model/use-accessory-categories';
 import { useCreateAccessory, useUpdateAccessory, useAdminAccessory } from '@/entities/accessory/model/use-admin-accessories';
+import { LanguageTabs } from '@/features/language-tabs/ui/LanguageTabs';
 import { api } from '@/shared/api';
 import { ROUTES } from '@/shared/config';
 import { Loader2 } from 'lucide-react';
 
 const schema = z.object({
-  name: z.string().min(1, 'Обязательно'),
-  accessoryBrandId: z.string().min(1, 'Обязательно'),
-  accessoryTypeDictId: z.string().min(1, 'Обязательно'),
-  accessorySeasonId: z.string().min(1, 'Обязательно'),
-  categoryId: z.string().min(1, 'Выберите категорию'),
-  dailyPrice: z.coerce.number().min(1, 'Обязательно'),
-  shortDescription: z.string().default(''),
-  description: z.string().default(''),
+  name_kk: z.string().min(1, 'required'),
+  name_ru: z.string().default(''),
+  name_en: z.string().default(''),
+  accessoryBrandId: z.string().min(1, 'required'),
+  accessoryTypeDictId: z.string().min(1, 'required'),
+  accessorySeasonId: z.string().min(1, 'required'),
+  categoryId: z.string().min(1, 'selectCategory'),
+  dailyPrice: z.coerce.number().min(1, 'required'),
+  shortDescription_kk: z.string().default(''),
+  shortDescription_ru: z.string().default(''),
+  shortDescription_en: z.string().default(''),
+  description_kk: z.string().default(''),
+  description_ru: z.string().default(''),
+  description_en: z.string().default(''),
   mainImage: z.string().default(''),
   isActive: z.boolean().default(true),
   unitsCount: z.coerce.number().min(0).default(0),
@@ -47,6 +55,7 @@ interface Props {
 }
 
 export const AccessoryForm = ({ mode, accessoryId }: Props) => {
+  const { t } = useTranslation('admin');
   const navigate = useNavigate();
   const { data: brands } = useAccessoryBrands();
   const { data: types } = useAccessoryTypes();
@@ -83,7 +92,9 @@ export const AccessoryForm = ({ mode, accessoryId }: Props) => {
   useEffect(() => {
     if (existing && mode === 'edit') {
       reset({
-        name: existing.name,
+        name_kk: existing.name_kk ?? existing.name ?? '',
+        name_ru: existing.name_ru ?? '',
+        name_en: existing.name_en ?? '',
         accessoryBrandId:
           existing.accessoryBrandId ?? existing.brand?.id ?? '',
         accessoryTypeDictId:
@@ -92,8 +103,12 @@ export const AccessoryForm = ({ mode, accessoryId }: Props) => {
           existing.accessorySeasonId ?? existing.season?.id ?? '',
         categoryId: existing.categoryId,
         dailyPrice: existing.dailyPrice,
-        shortDescription: existing.shortDescription,
-        description: existing.description,
+        shortDescription_kk: existing.shortDescription_kk ?? existing.shortDescription ?? '',
+        shortDescription_ru: existing.shortDescription_ru ?? '',
+        shortDescription_en: existing.shortDescription_en ?? '',
+        description_kk: existing.description_kk ?? existing.description ?? '',
+        description_ru: existing.description_ru ?? '',
+        description_en: existing.description_en ?? '',
         mainImage: existing.mainImage,
         isActive: existing.isActive,
         unitsCount: 0,
@@ -112,7 +127,7 @@ export const AccessoryForm = ({ mode, accessoryId }: Props) => {
         await Promise.all(
           Array.from({ length: unitsCount }).map((_, i) =>
             api.post(`/admin/accessories/${accessory.id}/units`, {
-              inventoryCode: `ACC-${accessory.name.slice(0, 5).toUpperCase()}-${String(i + 1).padStart(3, '0')}`,
+              inventoryCode: `ACC-${(accessory.name || data.name_kk).slice(0, 5).toUpperCase()}-${String(i + 1).padStart(3, '0')}`,
               status: 'AVAILABLE',
             })
           )
@@ -126,27 +141,56 @@ export const AccessoryForm = ({ mode, accessoryId }: Props) => {
 
   const isPending = create.isPending || update.isPending;
 
+  const nameField = (lang: string) => (
+    <div className="space-y-2" key={`name-${lang}`}>
+      <Label htmlFor={`name_${lang}`}>{t('accessoryForm.name')} ({lang.toUpperCase()}) {lang === 'kk' && '*'}</Label>
+      <Input id={`name_${lang}`} {...register(`name_${lang}` as keyof FormData)} />
+      {errors[`name_${lang}` as keyof FormData] && (
+        <p className="text-xs text-destructive">{(errors[`name_${lang}` as keyof FormData] as any)?.message}</p>
+      )}
+    </div>
+  );
+
+  const shortDescField = (lang: string) => (
+    <div className="space-y-2" key={`short-${lang}`}>
+      <Label htmlFor={`shortDescription_${lang}`}>{t('accessoryForm.shortDescription')} ({lang.toUpperCase()})</Label>
+      <Input id={`shortDescription_${lang}`} {...register(`shortDescription_${lang}` as keyof FormData)} />
+    </div>
+  );
+
+  const descField = (lang: string) => (
+    <div className="space-y-2" key={`desc-${lang}`}>
+      <Label htmlFor={`description_${lang}`}>{t('accessoryForm.fullDescription')} ({lang.toUpperCase()})</Label>
+      <textarea
+        id={`description_${lang}`}
+        {...register(`description_${lang}` as keyof FormData)}
+        rows={4}
+        className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+      />
+    </div>
+  );
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-3xl px-4 py-8 md:px-6 space-y-6">
       <h2 className="text-3xl font-bold tracking-tight">
-        {mode === 'create' ? 'Новая периферия' : 'Редактировать периферию'}
+        {mode === 'create' ? t('accessoryForm.createTitle') : t('accessoryForm.editTitle')}
       </h2>
 
       <Card>
         <CardHeader>
-          <CardTitle>Основное</CardTitle>
+          <CardTitle>{t('accessoryForm.basic')}</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="name">Название</Label>
-            <Input id="name" {...register('name')} />
-            {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+          <div className="sm:col-span-2">
+            <LanguageTabs>
+              {{ kk: nameField('kk'), ru: nameField('ru'), en: nameField('en') }}
+            </LanguageTabs>
           </div>
           <div className="space-y-2">
-            <Label>Категория</Label>
+            <Label>{t('accessoryForm.category')}</Label>
             <Select value={categoryId} onValueChange={(v) => setValue('categoryId', v)}>
               <SelectTrigger>
-                <SelectValue placeholder="Выберите категорию" />
+                <SelectValue placeholder={t('accessoryForm.selectCategory')} />
               </SelectTrigger>
               <SelectContent>
                 {categories?.map((c) => (
@@ -157,10 +201,10 @@ export const AccessoryForm = ({ mode, accessoryId }: Props) => {
             {errors.categoryId && <p className="text-xs text-destructive">{errors.categoryId.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label>Бренд</Label>
+            <Label>{t('accessoryForm.brand')}</Label>
             <Select value={accessoryBrandId} onValueChange={(v) => setValue('accessoryBrandId', v)}>
               <SelectTrigger>
-                <SelectValue placeholder="Выберите бренд" />
+                <SelectValue placeholder={t('accessoryForm.selectBrand')} />
               </SelectTrigger>
               <SelectContent>
                 {brands?.map((b) => (
@@ -171,10 +215,10 @@ export const AccessoryForm = ({ mode, accessoryId }: Props) => {
             {errors.accessoryBrandId && <p className="text-xs text-destructive">{errors.accessoryBrandId.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label>Тип</Label>
+            <Label>{t('accessoryForm.type')}</Label>
             <Select value={accessoryTypeDictId} onValueChange={(v) => setValue('accessoryTypeDictId', v)}>
               <SelectTrigger>
-                <SelectValue placeholder="Выберите тип" />
+                <SelectValue placeholder={t('accessoryForm.selectType')} />
               </SelectTrigger>
               <SelectContent>
                 {types?.map((t) => (
@@ -185,10 +229,10 @@ export const AccessoryForm = ({ mode, accessoryId }: Props) => {
             {errors.accessoryTypeDictId && <p className="text-xs text-destructive">{errors.accessoryTypeDictId.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label>Сезон</Label>
+            <Label>{t('accessoryForm.season')}</Label>
             <Select value={accessorySeasonId} onValueChange={(v) => setValue('accessorySeasonId', v)}>
               <SelectTrigger>
-                <SelectValue placeholder="Выберите сезон" />
+                <SelectValue placeholder={t('accessoryForm.selectSeason')} />
               </SelectTrigger>
               <SelectContent>
                 {seasons?.map((s) => (
@@ -199,12 +243,12 @@ export const AccessoryForm = ({ mode, accessoryId }: Props) => {
             {errors.accessorySeasonId && <p className="text-xs text-destructive">{errors.accessorySeasonId.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="dailyPrice">Цена за сутки (₸)</Label>
+            <Label htmlFor="dailyPrice">{t('accessoryForm.dailyPrice')}</Label>
             <Input id="dailyPrice" type="number" {...register('dailyPrice')} />
           </div>
           {mode === 'create' && (
             <div className="space-y-2">
-              <Label htmlFor="unitsCount">Количество единиц на складе</Label>
+              <Label htmlFor="unitsCount">{t('accessoryForm.unitsCount')}</Label>
               <Input id="unitsCount" type="number" {...register('unitsCount')} />
             </div>
           )}
@@ -213,37 +257,30 @@ export const AccessoryForm = ({ mode, accessoryId }: Props) => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Описание</CardTitle>
+          <CardTitle>{t('accessoryForm.description')}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="shortDescription">Краткое описание</Label>
-            <Input id="shortDescription" {...register('shortDescription')} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="description">Полное описание</Label>
-            <textarea
-              id="description"
-              {...register('description')}
-              rows={4}
-              className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            />
-          </div>
+        <CardContent className="space-y-6">
+          <LanguageTabs>
+            {{ kk: shortDescField('kk'), ru: shortDescField('ru'), en: shortDescField('en') }}
+          </LanguageTabs>
+          <LanguageTabs>
+            {{ kk: descField('kk'), ru: descField('ru'), en: descField('en') }}
+          </LanguageTabs>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Изображения</CardTitle>
+          <CardTitle>{t('accessoryForm.images')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <Label>Главное изображение</Label>
+            <Label>{t('accessoryForm.mainImage')}</Label>
             <ImageUpload value={mainImage} onChange={(url) => setValue('mainImage', url)} />
           </div>
 
           <div className="space-y-3">
-            <Label>Дополнительные фотографии</Label>
+            <Label>{t('accessoryForm.additionalImages')}</Label>
             <div className="flex flex-wrap gap-3">
               {images.map((img, i) => (
                 <div key={i} className="relative h-20 w-20 overflow-hidden rounded-lg border">
@@ -271,7 +308,7 @@ export const AccessoryForm = ({ mode, accessoryId }: Props) => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Настройки</CardTitle>
+          <CardTitle>{t('accessoryForm.settings')}</CardTitle>
         </CardHeader>
         <CardContent>
           <label className="flex items-center gap-2 text-sm">
@@ -279,7 +316,7 @@ export const AccessoryForm = ({ mode, accessoryId }: Props) => {
               checked={isActive}
               onCheckedChange={(checked) => setValue('isActive', !!checked)}
             />
-            Активна (отображается в каталоге)
+            {t('accessoryForm.isActive')}
           </label>
         </CardContent>
       </Card>
@@ -287,10 +324,10 @@ export const AccessoryForm = ({ mode, accessoryId }: Props) => {
       <div className="flex gap-3">
         <Button type="submit" disabled={isPending}>
           {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {mode === 'create' ? 'Создать' : 'Сохранить'}
+          {mode === 'create' ? t('accessoryForm.create') : t('accessoryForm.save')}
         </Button>
         <Button type="button" variant="outline" onClick={() => navigate(ROUTES.ADMIN_INVENTORY_ACCESSORIES)}>
-          Отмена
+          {t('accessoryForm.cancel')}
         </Button>
       </div>
     </form>

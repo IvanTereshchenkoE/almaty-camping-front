@@ -4,18 +4,15 @@ import { ROUTES } from '@/shared/config';
 import { Button } from '@/shared/ui/button';
 import { Badge } from '@/shared/ui/badge';
 import { MapPin, Truck, ShieldCheck, Smartphone } from 'lucide-react';
-
+import { useTranslation } from 'react-i18next';
 
 const HERO_VIDEO_SRC = '/videos/videoplayback.mp4';
 
-const METRICS = [
-  { icon: MapPin, label: '450 км', desc: 'вокруг Алматы' },
-  { icon: Truck, label: 'Доставка', desc: 'к старту' },
-  { icon: ShieldCheck, label: 'Без залога', desc: 'и лишних документов' },
-  { icon: Smartphone, label: 'Онлайн', desc: 'бронирование' },
-];
+const METRIC_ICONS = [MapPin, Truck, ShieldCheck, Smartphone];
+const METRIC_KEYS = ['distance', 'delivery', 'noDeposit', 'online'];
 
 export function HomeHero() {
+  const { t } = useTranslation('home');
   const sectionRef = useRef<HTMLElement>(null);
   const [scrollY, setScrollY] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -91,18 +88,17 @@ export function HomeHero() {
             variant="outline"
             className="mb-6 border-white/25 bg-white/10 px-4 py-1.5 text-sm font-medium text-white/90 backdrop-blur-sm hover:bg-white/15"
           >
-            Аренда палаток в Алматы
+            {t('hero.badge')}
           </Badge>
 
           <h1 className="max-w-4xl text-4xl font-extrabold leading-[0.95] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-            Кемпинг в Алматы
+            {t('hero.title1')}
             <br />
-            <span className="text-emerald-300">просто и удобно</span>
+            <span className="text-emerald-300">{t('hero.title2')}</span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-[720px] text-lg leading-relaxed text-white/85 md:text-xl">
-            Мы не профессиональные альпинисты. Мы обычные люди, которые любят природу.
-            Возьми палатку в аренду или купи свою — и отправляйся на выходные в горы.
+            {t('hero.description')}
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -111,7 +107,7 @@ export function HomeHero() {
                 size="lg"
                 className="min-w-[220px] bg-white text-emerald-950 font-semibold shadow-lg hover:bg-emerald-50"
               >
-                Посмотреть палатки
+                {t('hero.ctaCatalog')}
               </Button>
             </Link>
             <a href="#locations">
@@ -120,7 +116,7 @@ export function HomeHero() {
                 variant="outline"
                 className="min-w-[220px] border-white/40 bg-transparent text-white font-semibold shadow-sm hover:bg-white/15 hover:text-white hover:border-white/50"
               >
-                Популярные места
+                {t('hero.ctaLocations')}
               </Button>
             </a>
           </div>
@@ -128,18 +124,21 @@ export function HomeHero() {
 
         {/* Metrics */}
         <div className="mx-auto mt-12 grid grid-cols-2 gap-3 md:mt-16 md:max-w-3xl md:grid-cols-4 md:gap-4">
-          {METRICS.map((m) => (
-            <div
-              key={m.label}
-              className="flex items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur-sm md:px-5 md:py-3.5"
-            >
-              <m.icon className="h-5 w-5 shrink-0 text-emerald-300" />
-              <div className="text-left">
-                <p className="text-sm font-semibold">{m.label}</p>
-                <p className="text-xs text-white/70">{m.desc}</p>
+          {METRIC_KEYS.map((key, i) => {
+            const Icon = METRIC_ICONS[i];
+            return (
+              <div
+                key={key}
+                className="flex items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur-sm md:px-5 md:py-3.5"
+              >
+                <Icon className="h-5 w-5 shrink-0 text-emerald-300" />
+                <div className="text-left">
+                  <p className="text-sm font-semibold">{t(`hero.metrics.${key}`)}</p>
+                  <p className="text-xs text-white/70">{t(`hero.metrics.${key}Desc`)}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

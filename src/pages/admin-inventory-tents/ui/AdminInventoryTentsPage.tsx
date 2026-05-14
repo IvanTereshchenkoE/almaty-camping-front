@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAdminTents, useDeleteTent } from '@/entities/tent/model/use-admin-tents';
 import { useUsers } from '@/entities/user/model/use-users';
 import { Button } from '@/shared/ui/button';
@@ -24,15 +25,7 @@ import { api } from '@/shared/api';
 import { useQueryClient } from '@tanstack/react-query';
 
 const FALLBACK_IMAGE = 'https://placehold.co/400x300?text=No+Image';
-
-/** Radix Select.Item cannot use value="" — empty string is reserved for clearing selection */
 const OWNER_UNASSIGNED = '__owner_unassigned__';
-
-const statusLabels: Record<string, string> = {
-  AVAILABLE: 'Доступна',
-  DAMAGED: 'Повреждена',
-  MAINTENANCE: 'На ремонте',
-};
 
 const statusColors: Record<string, string> = {
   AVAILABLE: 'bg-green-500',
@@ -62,6 +55,7 @@ interface TentType {
 }
 
 export const AdminInventoryTentsPage = () => {
+  const { t } = useTranslation('admin');
   const [search, setSearch] = useState('');
   const { data: tents, isLoading } = useAdminTents();
   const deleteTent = useDeleteTent();
@@ -123,18 +117,18 @@ export const AdminInventoryTentsPage = () => {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 md:px-6">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <h2 className="text-3xl font-bold tracking-tight">Склад</h2>
+        <h2 className="text-3xl font-bold tracking-tight">{t('inventory.title')}</h2>
         <div className="flex gap-2">
           <Link to={ROUTES.ADMIN_SETTINGS}>
             <Button size="sm" variant="outline">
               <Settings className="h-4 w-4 mr-1" />
-              Справочники
+              {t('inventory.dictionaries')}
             </Button>
           </Link>
           <Link to={`${ROUTES.ADMIN_INVENTORY_TENTS}/create`}>
             <Button size="sm">
               <Plus className="h-4 w-4 mr-1" />
-              Добавить тип палатки
+              {t('inventory.addTent')}
             </Button>
           </Link>
         </div>
@@ -151,7 +145,7 @@ export const AdminInventoryTentsPage = () => {
           )}
         >
           <Tent className="h-4 w-4" />
-          Палатки
+          {t('inventory.tentsTab')}
         </Link>
         <Link
           to={ROUTES.ADMIN_INVENTORY_ACCESSORIES}
@@ -163,13 +157,13 @@ export const AdminInventoryTentsPage = () => {
           )}
         >
           <Package className="h-4 w-4" />
-          Периферия
+          {t('inventory.accessoriesTab')}
         </Link>
       </div>
 
       <div className="mb-6">
         <Input
-          placeholder="Поиск по названию, бренду или типу..."
+          placeholder={t('inventory.searchTents')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="max-w-md"
@@ -183,7 +177,7 @@ export const AdminInventoryTentsPage = () => {
       ) : filtered && filtered.length === 0 ? (
         <div className="text-center py-24 text-muted-foreground">
           <PackageOpen className="h-12 w-12 mx-auto mb-4" />
-          <p>Палатки не найдены</p>
+          <p>{t('inventory.tentsNotFound')}</p>
         </div>
       ) : (
         <div className="grid gap-4">
@@ -210,27 +204,27 @@ export const AdminInventoryTentsPage = () => {
                       <div>
                         <h3 className="font-semibold text-base">{tent.name}</h3>
                         <p className="text-sm text-muted-foreground">
-                          {tent.brand?.name || '—'} · {tent.type?.name || '—'} · {tent.season?.name || '—'} · {tent.capacity} чел.
+                          {tent.brand?.name || '—'} · {tent.type?.name || '—'} · {tent.season?.name || '—'} · {tent.capacity} {t('inventory.capacity')}
                         </p>
                       </div>
                       <Badge variant={tent.isActive ? 'default' : 'secondary'}>
-                        {tent.isActive ? 'Активна' : 'Неактивна'}
+                        {tent.isActive ? t('inventory.active') : t('inventory.inactive')}
                       </Badge>
                     </div>
                     <div className="text-sm space-y-1 mb-4">
-                      <p><span className="text-muted-foreground">Цена:</span> {tent.dailyPrice.toLocaleString()} ₸/сутки</p>
-                      <p><span className="text-muted-foreground">Единиц на складе:</span> {tent.units?.length || 0} <span className="text-green-600">({availableCount} доступно)</span></p>
-                      <p><span className="text-muted-foreground">Вес:</span> {tent.weight} кг</p>
+                      <p><span className="text-muted-foreground">{t('inventory.price')}</span> {tent.dailyPrice.toLocaleString()} ₸/сутки</p>
+                      <p><span className="text-muted-foreground">{t('inventory.units')}</span> {tent.units?.length || 0} <span className="text-green-600">({availableCount} {t('inventory.available')})</span></p>
+                      <p><span className="text-muted-foreground">{t('inventory.weight')}</span> {tent.weight} кг</p>
                     </div>
                     <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                       <Link to={`${ROUTES.ADMIN_INVENTORY_TENTS}/${tent.id}/edit`}>
-                        <Button size="sm" variant="outline">Редактировать тип</Button>
+                        <Button size="sm" variant="outline">{t('inventory.edit')}</Button>
                       </Link>
                       <Button
                         size="sm"
                         variant="destructive"
                         onClick={() => {
-                          if (confirm('Удалить тип палатки и все единицы?')) deleteTent.mutate(tent.id);
+                          if (confirm(t('inventory.deleteTentConfirm'))) deleteTent.mutate(tent.id);
                         }}
                         disabled={deleteTent.isPending}
                       >
@@ -250,12 +244,12 @@ export const AdminInventoryTentsPage = () => {
         <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {selectedTent?.name} — единицы на складе
+              {t('inventory.unitDialog.title', { name: selectedTent?.name })}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
             {selectedTent?.units?.length === 0 && (
-              <p className="text-sm text-muted-foreground">Нет единиц на складе</p>
+              <p className="text-sm text-muted-foreground">{t('inventory.unitDialog.noUnits')}</p>
             )}
             {selectedTent?.units?.map((unit: any) => {
               const unitImg = unit.photo?.startsWith('/api/upload/')
@@ -272,15 +266,17 @@ export const AdminInventoryTentsPage = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-sm">{unit.inventoryCode}</span>
-                      <Badge className={statusColors[unit.status] || 'bg-gray-500'}>{statusLabels[unit.status] || unit.status}</Badge>
+                      <Badge className={statusColors[unit.status] || 'bg-gray-500'}>
+                        {t(`inventory.unitDialog.status${unit.status}`) || unit.status}
+                      </Badge>
                     </div>
                     <p className="text-xs text-muted-foreground truncate">
-                      Владелец: {unit.owner?.name || unit.owner?.email || 'Не назначен'}
+                      {t('inventory.unitDialog.owner')} {unit.owner?.name || unit.owner?.email || t('inventory.unitDialog.noOwner')}
                     </p>
                   </div>
                   <Button size="sm" variant="outline" onClick={() => openEditModal(unit)}>
                     <Pencil className="h-3.5 w-3.5 mr-1" />
-                    Изменить
+                    {t('inventory.edit')}
                   </Button>
                 </div>
               );
@@ -293,29 +289,29 @@ export const AdminInventoryTentsPage = () => {
       <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Редактировать единицу</DialogTitle>
+            <DialogTitle>{t('inventory.unitDialog.editUnit')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label>Фото единицы</Label>
+              <Label>{t('inventory.unitDialog.unitPhoto')}</Label>
               <ImageUpload value={editPhoto} onChange={setEditPhoto} />
-              {!editPhoto && <p className="text-xs text-muted-foreground">Если не загрузить фото, будет использовано фото типа палатки</p>}
+              {!editPhoto && <p className="text-xs text-muted-foreground">{t('inventory.unitDialog.photoHint')}</p>}
             </div>
             <div className="space-y-2">
-              <Label>Статус</Label>
+              <Label>{t('inventory.unitDialog.status')}</Label>
               <Select value={editStatus} onValueChange={setEditStatus}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="AVAILABLE">Доступна</SelectItem>
-                  <SelectItem value="DAMAGED">Повреждена</SelectItem>
-                  <SelectItem value="MAINTENANCE">На ремонте</SelectItem>
+                  <SelectItem value="AVAILABLE">{t('inventory.unitDialog.statusAvailable')}</SelectItem>
+                  <SelectItem value="DAMAGED">{t('inventory.unitDialog.statusDamaged')}</SelectItem>
+                  <SelectItem value="MAINTENANCE">{t('inventory.unitDialog.statusMaintenance')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Владелец</Label>
+              <Label>{t('inventory.unitDialog.unitOwner')}</Label>
               <Select
                 value={editOwnerId ?? OWNER_UNASSIGNED}
                 onValueChange={(v) =>
@@ -323,10 +319,10 @@ export const AdminInventoryTentsPage = () => {
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Выберите владельца" />
+                  <SelectValue placeholder={t('inventory.unitDialog.selectOwner')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={OWNER_UNASSIGNED}>Не назначен</SelectItem>
+                  <SelectItem value={OWNER_UNASSIGNED}>{t('inventory.unitDialog.noOwnerOption')}</SelectItem>
                   {users?.map((u) => (
                     <SelectItem key={u.id} value={u.id}>{u.name || u.email}</SelectItem>
                   ))}
@@ -335,10 +331,10 @@ export const AdminInventoryTentsPage = () => {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEditModalOpen(false)}>Отмена</Button>
+            <Button variant="outline" onClick={() => setEditModalOpen(false)}>{t('inventory.unitDialog.cancel')}</Button>
             <Button onClick={saveUnit} disabled={savingUnit}>
               {savingUnit && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Сохранить
+              {t('inventory.unitDialog.save')}
             </Button>
           </DialogFooter>
         </DialogContent>

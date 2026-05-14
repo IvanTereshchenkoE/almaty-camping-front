@@ -4,18 +4,17 @@ import { z } from 'zod';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { Button } from '@/shared/ui/button';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
-const schema = z.object({
-  clientName: z.string().min(2, 'Минимум 2 символа'),
-  phone: z.string().min(1, 'Обязательно').regex(/^\+?[0-9\s\-()]{10,}$/, 'Некорректный номер'),
-  telegram: z.string().optional(),
-  whatsapp: z.string().optional(),
-  email: z.union([z.string().email('Некорректный email'), z.literal('')]),
-  comment: z.string().optional(),
-});
-
-export type ContactFormData = z.infer<typeof schema>;
+export type ContactFormData = {
+  clientName: string;
+  phone: string;
+  telegram?: string;
+  whatsapp?: string;
+  email?: string;
+  comment?: string;
+};
 
 interface Props {
   defaultValues?: Partial<ContactFormData>;
@@ -25,12 +24,25 @@ interface Props {
 }
 
 export const ContactForm = ({ defaultValues, onSubmit, onBack, isPending }: Props) => {
+  const { t } = useTranslation('order');
+
+  const schema = useMemo(() => z.object({
+    clientName: z.string().min(2, t('contactForm.required')),
+    phone: z.string().min(1, t('contactForm.required')).regex(/^\+?[0-9\s\-()]{10,}$/, t('contactForm.invalidPhone')),
+    telegram: z.string().optional(),
+    whatsapp: z.string().optional(),
+    email: z.union([z.string().email(t('contactForm.required')), z.literal('')]),
+    comment: z.string().optional(),
+  }), [t]);
+
+  type SchemaType = z.infer<typeof schema>;
+
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<ContactFormData>({
+  } = useForm<SchemaType>({
     resolver: zodResolver(schema),
     defaultValues: {
       clientName: '',
@@ -49,17 +61,21 @@ export const ContactForm = ({ defaultValues, onSubmit, onBack, isPending }: Prop
     }
   }, [defaultValues, reset]);
 
+  const onFormSubmit = (data: SchemaType) => {
+    onSubmit(data as ContactFormData);
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-5">
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="clientName">
-            Имя <span className="text-red-500">*</span>
+            {t('contactForm.name')} <span className="text-red-500">*</span>
           </Label>
           <Input
             id="clientName"
             {...register('clientName')}
-            placeholder="Ваше имя"
+            placeholder={t('contactForm.namePlaceholder')}
             className="h-[52px] rounded-2xl border-emerald-900/10"
           />
           {errors.clientName && (
@@ -69,12 +85,12 @@ export const ContactForm = ({ defaultValues, onSubmit, onBack, isPending }: Prop
 
         <div className="space-y-2">
           <Label htmlFor="phone">
-            Телефон <span className="text-red-500">*</span>
+            {t('contactForm.phone')} <span className="text-red-500">*</span>
           </Label>
           <Input
             id="phone"
             {...register('phone')}
-            placeholder="+7 (XXX) XXX-XX-XX"
+            placeholder={t('contactForm.phonePlaceholder')}
             className="h-[52px] rounded-2xl border-emerald-900/10"
           />
           {errors.phone && (
@@ -83,11 +99,11 @@ export const ContactForm = ({ defaultValues, onSubmit, onBack, isPending }: Prop
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="telegram">Telegram</Label>
+          <Label htmlFor="telegram">{t('contactForm.telegram')}</Label>
           <Input
             id="telegram"
             {...register('telegram')}
-            placeholder="@username"
+            placeholder={t('contactForm.telegramPlaceholder')}
             className="h-[52px] rounded-2xl border-emerald-900/10"
           />
           {errors.telegram && (
@@ -96,11 +112,11 @@ export const ContactForm = ({ defaultValues, onSubmit, onBack, isPending }: Prop
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="whatsapp">WhatsApp</Label>
+          <Label htmlFor="whatsapp">{t('contactForm.whatsapp')}</Label>
           <Input
             id="whatsapp"
             {...register('whatsapp')}
-            placeholder="+7..."
+            placeholder={t('contactForm.whatsappPlaceholder')}
             className="h-[52px] rounded-2xl border-emerald-900/10"
           />
           {errors.whatsapp && (
@@ -109,12 +125,12 @@ export const ContactForm = ({ defaultValues, onSubmit, onBack, isPending }: Prop
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t('contactForm.email')}</Label>
           <Input
             id="email"
             type="email"
             {...register('email')}
-            placeholder="email@example.com"
+            placeholder={t('contactForm.emailPlaceholder')}
             className="h-[52px] rounded-2xl border-emerald-900/10"
           />
           {errors.email && (
@@ -123,12 +139,12 @@ export const ContactForm = ({ defaultValues, onSubmit, onBack, isPending }: Prop
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="comment">Комментарий</Label>
+          <Label htmlFor="comment">{t('contactForm.comment')}</Label>
           <textarea
             id="comment"
             {...register('comment')}
             rows={3}
-            placeholder="Дополнительная информация..."
+            placeholder={t('contactForm.commentPlaceholder')}
             className="flex w-full rounded-2xl border border-emerald-900/10 bg-white px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/20 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           />
         </div>
@@ -142,7 +158,7 @@ export const ContactForm = ({ defaultValues, onSubmit, onBack, isPending }: Prop
             onClick={onBack}
             className="h-12 flex-1 rounded-2xl border-emerald-900/10"
           >
-            Назад
+            {t('contactsPage.back')}
           </Button>
         )}
         <Button
@@ -150,7 +166,7 @@ export const ContactForm = ({ defaultValues, onSubmit, onBack, isPending }: Prop
           disabled={isPending}
           className="h-12 flex-1 rounded-2xl bg-emerald-700 hover:bg-emerald-800"
         >
-          {isPending ? 'Сохранение...' : 'Далее'}
+          {isPending ? `${t('contactsPage.next')}...` : t('contactsPage.next')}
         </Button>
       </div>
     </form>

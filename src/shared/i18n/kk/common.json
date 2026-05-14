@@ -1,0 +1,61 @@
+{
+  "nav": {
+    "home": "Басты бет",
+    "catalog": "Шатырлар каталогы",
+    "myOrders": "Менің тапсырыстарым",
+    "admin": {
+      "title": "Әкімші",
+      "orders": "Тапсырыстар",
+      "inventory": "Қойма",
+      "analytics": "Аналитика",
+      "settings": "Анықтамалықтар"
+    },
+    "logout": "Шығу",
+    "login": "Әкімші кірісі",
+    "openMenu": "Мәзірді ашу",
+    "closeMenu": "Мәзірді жабу"
+  },
+  "footer": {
+    "brandDesc": "Алматы мен облысында кемпинг үшін шатырларды жалға алу және сату. Жеңіл, ыңғайлы, жеткізумен.",
+    "navigation": "Навигация",
+    "contacts": "Байланыс",
+    "address": "қ. Алматы, Қазақстан",
+    "workHoursWeek": "Дс–Жм: 09:00 – 20:00",
+    "workHoursWeekend": "Сб–Жк: 10:00 – 18:00",
+    "copyright": "© {{year}} Almaty Camping. Барлық құқықтар қорғалған.",
+    "madeWithLove": "Тауларды сүюмен жасалған"
+  },
+  "actions": {
+    "save": "Сақтау",
+    "cancel": "Бас тарту",
+    "delete": "Жою",
+    "edit": "Өңдеу",
+    "add": "Қосу",
+    "search": "Іздеу",
+    "close": "Жабу",
+    "back": "Артқа",
+    "next": "Келесі",
+    "submit": "Жіберу",
+    "continue": "Жалғастыру",
+    "view": "Қарау",
+    "select": "Таңдау",
+    "details": "Толығырақ"
+  },
+  "status": {
+    "available": "Қол жетімді",
+    "outOfStock": "Қол жетімсіз",
+    "unavailable": "Үзіліс",
+    "active": "Белсенді",
+    "archive": "Мұрағат"
+  },
+  "units": {
+    "km": "км",
+    "kg": "кг",
+    "day_one": "тәулік",
+    "day_few": "тәулік",
+    "day_many": "тәулік",
+    "person_one": "адам",
+    "person_few": "адам",
+    "person_many": "адам"
+  }
+}

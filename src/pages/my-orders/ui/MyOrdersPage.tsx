@@ -7,35 +7,14 @@ import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { Loader2, PackageOpen, Trash2 } from 'lucide-react';
 import { cn } from '@/shared/lib/cn';
-
-const statusLabels: Record<string, string> = {
-  NEW: 'Новая заявка',
-  VIEWED: 'Просмотрена',
-  CONFIRMED: 'Подтверждена',
-  PREPAID: 'Предоплата внесена',
-  ISSUED: 'Выдано клиенту',
-  RETURNED: 'Возвращено',
-  COMPLETED: 'Завершена',
-  CANCELLED: 'Отменена',
-  DAMAGED: 'Есть повреждения',
-};
-
-const statusColors: Record<string, string> = {
-  NEW: 'bg-blue-500',
-  VIEWED: 'bg-slate-500',
-  CONFIRMED: 'bg-yellow-500',
-  PREPAID: 'bg-emerald-500',
-  ISSUED: 'bg-purple-500',
-  RETURNED: 'bg-orange-500',
-  COMPLETED: 'bg-green-500',
-  CANCELLED: 'bg-gray-500',
-  DAMAGED: 'bg-red-500',
-};
+import { useTranslation } from 'react-i18next';
+import { Helmet } from 'react-helmet-async';
 
 function OrderCard({ meta, onRemove }: { meta: MyOrderMeta; onRemove: () => void }) {
+  const { t, i18n } = useTranslation('myOrders');
   const { data: order, isLoading } = useOrderById(meta.id);
-
   const display = order || meta;
+  const locale = i18n.language === 'kk' ? 'kk-KZ' : i18n.language === 'en' ? 'en-US' : 'ru-KZ';
 
   return (
     <Card>
@@ -50,8 +29,8 @@ function OrderCard({ meta, onRemove }: { meta: MyOrderMeta; onRemove: () => void
           {isLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
-            <Badge className={cn('text-white', statusColors[display.status] || 'bg-gray-500')}>
-              {statusLabels[display.status] || display.status}
+            <Badge className={cn('text-white', getStatusColor(display.status))}>
+              {t(`status.${display.status}`, { defaultValue: display.status })}
             </Badge>
           )}
         </div>
@@ -62,20 +41,20 @@ function OrderCard({ meta, onRemove }: { meta: MyOrderMeta; onRemove: () => void
             {order && (
               <>
                 <p>
-                  <span className="text-muted-foreground">Даты:</span>{' '}
-                  {new Date(order.startDate).toLocaleDateString('ru-KZ')} — {new Date(order.endDate).toLocaleDateString('ru-KZ')}
+                  <span className="text-muted-foreground">{t('dates')}:</span>{' '}
+                  {new Date(order.startDate).toLocaleDateString(locale)} — {new Date(order.endDate).toLocaleDateString(locale)}
                 </p>
                 <p>
-                  <span className="text-muted-foreground">Позиций:</span> {order.items.length}
+                  <span className="text-muted-foreground">{t('items')}:</span> {order.items.length}
                 </p>
               </>
             )}
             <p>
-              <span className="text-muted-foreground">Сумма:</span>{' '}
+              <span className="text-muted-foreground">{t('total')}:</span>{' '}
               <span className="font-medium">{(order?.totalAmount ?? display.totalAmount).toLocaleString()} ₸</span>
             </p>
             <p className="text-xs text-muted-foreground">
-              Создан: {new Date(display.createdAt).toLocaleString('ru-KZ')}
+              {t('created')}: {new Date(display.createdAt).toLocaleString(locale)}
             </p>
           </div>
           <div className="flex gap-2">
@@ -89,7 +68,23 @@ function OrderCard({ meta, onRemove }: { meta: MyOrderMeta; onRemove: () => void
   );
 }
 
+function getStatusColor(status: string): string {
+  const colors: Record<string, string> = {
+    NEW: 'bg-blue-500',
+    VIEWED: 'bg-slate-500',
+    CONFIRMED: 'bg-yellow-500',
+    PREPAID: 'bg-emerald-500',
+    ISSUED: 'bg-purple-500',
+    RETURNED: 'bg-orange-500',
+    COMPLETED: 'bg-green-500',
+    CANCELLED: 'bg-gray-500',
+    DAMAGED: 'bg-red-500',
+  };
+  return colors[status] || 'bg-gray-500';
+}
+
 export const MyOrdersPage = () => {
+  const { t } = useTranslation(['myOrders', 'seo']);
   const [orders, setOrders] = useState<MyOrderMeta[]>([]);
 
   useEffect(() => {
@@ -102,24 +97,30 @@ export const MyOrdersPage = () => {
   };
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 md:px-6">
-      <h2 className="text-3xl font-bold tracking-tight mb-8">Мои заказы</h2>
+    <>
+      <Helmet>
+        <title>{t('seo:myOrders.title')}</title>
+        <meta name="description" content={t('seo:myOrders.description')} />
+      </Helmet>
+      <div className="mx-auto max-w-3xl px-4 py-8 md:px-6">
+        <h2 className="text-3xl font-bold tracking-tight mb-8">{t('myOrders:title')}</h2>
 
-      {orders.length === 0 ? (
-        <div className="text-center py-24 text-muted-foreground">
-          <PackageOpen className="h-12 w-12 mx-auto mb-4" />
-          <p className="mb-2">У вас пока нет заказов</p>
-          <Link to="/catalog">
-            <Button variant="outline">Перейти в каталог</Button>
-          </Link>
-        </div>
-      ) : (
-        <div className="grid gap-4">
-          {orders.map((meta) => (
-            <OrderCard key={meta.id} meta={meta} onRemove={() => handleRemove(meta.id)} />
-          ))}
-        </div>
-      )}
-    </div>
+        {orders.length === 0 ? (
+          <div className="text-center py-24 text-muted-foreground">
+            <PackageOpen className="h-12 w-12 mx-auto mb-4" />
+            <p className="mb-2">{t('myOrders:empty')}</p>
+            <Link to="/catalog">
+              <Button variant="outline">{t('myOrders:goToCatalog')}</Button>
+            </Link>
+          </div>
+        ) : (
+          <div className="grid gap-4">
+            {orders.map((meta) => (
+              <OrderCard key={meta.id} meta={meta} onRemove={() => handleRemove(meta.id)} />
+            ))}
+          </div>
+        )}
+      </div>
+    </>
   );
 };

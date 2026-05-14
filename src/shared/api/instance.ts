@@ -1,4 +1,5 @@
 import axios from 'axios';
+import i18n from '@/shared/lib/i18n';
 
 function getApiOrigin(): string {
   const raw = import.meta.env.VITE_API_URL;
@@ -32,6 +33,8 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    const lang = i18n.language || 'kk';
+    config.headers['Accept-Language'] = lang;
     if (config.data instanceof FormData) {
       delete config.headers['Content-Type'];
     }

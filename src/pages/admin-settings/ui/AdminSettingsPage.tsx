@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -13,15 +14,6 @@ import { useAccessorySeasons, useCreateAccessorySeason, useUpdateAccessorySeason
 
 type DictTab = 'tent-brands' | 'tent-types' | 'tent-seasons' | 'accessory-brands' | 'accessory-types' | 'accessory-seasons';
 
-const TABS: { key: DictTab; label: string; icon: React.ReactNode }[] = [
-  { key: 'tent-brands', label: 'Бренды палаток', icon: <Tent className="h-4 w-4" /> },
-  { key: 'tent-types', label: 'Типы палаток', icon: <Tent className="h-4 w-4" /> },
-  { key: 'tent-seasons', label: 'Сезоны палаток', icon: <Tent className="h-4 w-4" /> },
-  { key: 'accessory-brands', label: 'Бренды периферии', icon: <Package className="h-4 w-4" /> },
-  { key: 'accessory-types', label: 'Типы периферии', icon: <Package className="h-4 w-4" /> },
-  { key: 'accessory-seasons', label: 'Сезоны периферии', icon: <Package className="h-4 w-4" /> },
-];
-
 function DictionarySection({
   title,
   items,
@@ -29,6 +21,7 @@ function DictionarySection({
   create,
   update,
   del,
+  t,
 }: {
   title: string;
   items?: { id: string; name: string }[];
@@ -36,6 +29,7 @@ function DictionarySection({
   create: { mutateAsync: (dto: { name: string }) => Promise<any>; isPending: boolean };
   update: { mutateAsync: (vars: { id: string; dto: { name: string } }) => Promise<any>; isPending: boolean };
   del: { mutateAsync: (id: string) => Promise<any>; isPending: boolean };
+  t: (key: string) => string;
 }) {
   const [newName, setNewName] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -61,7 +55,7 @@ function DictionarySection({
       <CardContent className="space-y-4">
         <div className="flex gap-2">
           <Input
-            placeholder="Новое значение..."
+            placeholder={t('dictionaries.newValuePlaceholder')}
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
@@ -92,7 +86,7 @@ function DictionarySection({
                       <Save className="h-4 w-4" />
                     </Button>
                     <Button size="sm" variant="ghost" onClick={() => setEditingId(null)}>
-                      Отмена
+                      {t('dictionaries.cancel')}
                     </Button>
                   </>
                 ) : (
@@ -113,7 +107,7 @@ function DictionarySection({
                       variant="ghost"
                       className="text-destructive"
                       onClick={() => {
-                        if (confirm('Удалить?')) del.mutateAsync(item.id);
+                        if (confirm(t('dictionaries.deleteConfirm'))) del.mutateAsync(item.id);
                       }}
                       disabled={del.isPending}
                     >
@@ -123,7 +117,7 @@ function DictionarySection({
                 )}
               </div>
             ))}
-            {!items?.length && <p className="text-sm text-muted-foreground">Нет записей</p>}
+            {!items?.length && <p className="text-sm text-muted-foreground">{t('dictionaries.noRecords')}</p>}
           </div>
         )}
       </CardContent>
@@ -132,6 +126,7 @@ function DictionarySection({
 }
 
 export const AdminSettingsPage = () => {
+  const { t } = useTranslation('admin');
   const navigate = useNavigate();
   const [tab, setTab] = useState<DictTab>('tent-brands');
 
@@ -166,6 +161,15 @@ export const AdminSettingsPage = () => {
   const updateAccessorySeason = useUpdateAccessorySeason();
   const deleteAccessorySeason = useDeleteAccessorySeason();
 
+  const TABS: { key: DictTab; label: string; icon: React.ReactNode }[] = [
+    { key: 'tent-brands', label: t('dictionaries.tentBrands'), icon: <Tent className="h-4 w-4" /> },
+    { key: 'tent-types', label: t('dictionaries.tentTypes'), icon: <Tent className="h-4 w-4" /> },
+    { key: 'tent-seasons', label: t('dictionaries.tentSeasons'), icon: <Tent className="h-4 w-4" /> },
+    { key: 'accessory-brands', label: t('dictionaries.accessoryBrands'), icon: <Package className="h-4 w-4" /> },
+    { key: 'accessory-types', label: t('dictionaries.accessoryTypes'), icon: <Package className="h-4 w-4" /> },
+    { key: 'accessory-seasons', label: t('dictionaries.accessorySeasons'), icon: <Package className="h-4 w-4" /> },
+  ];
+
   const tabData: Record<DictTab, {
     title: string;
     items?: { id: string; name: string }[];
@@ -174,12 +178,12 @@ export const AdminSettingsPage = () => {
     update: any;
     del: any;
   }> = {
-    'tent-brands': { title: 'Бренды палаток', items: tentBrands.data, isLoading: tentBrands.isLoading, create: createTentBrand, update: updateTentBrand, del: deleteTentBrand },
-    'tent-types': { title: 'Типы палаток', items: tentTypes.data, isLoading: tentTypes.isLoading, create: createTentType, update: updateTentType, del: deleteTentType },
-    'tent-seasons': { title: 'Сезоны палаток', items: tentSeasons.data, isLoading: tentSeasons.isLoading, create: createTentSeason, update: updateTentSeason, del: deleteTentSeason },
-    'accessory-brands': { title: 'Бренды периферии', items: accessoryBrands.data, isLoading: accessoryBrands.isLoading, create: createAccessoryBrand, update: updateAccessoryBrand, del: deleteAccessoryBrand },
-    'accessory-types': { title: 'Типы периферии', items: accessoryTypes.data, isLoading: accessoryTypes.isLoading, create: createAccessoryType, update: updateAccessoryType, del: deleteAccessoryType },
-    'accessory-seasons': { title: 'Сезоны периферии', items: accessorySeasons.data, isLoading: accessorySeasons.isLoading, create: createAccessorySeason, update: updateAccessorySeason, del: deleteAccessorySeason },
+    'tent-brands': { title: t('dictionaries.tentBrands'), items: tentBrands.data, isLoading: tentBrands.isLoading, create: createTentBrand, update: updateTentBrand, del: deleteTentBrand },
+    'tent-types': { title: t('dictionaries.tentTypes'), items: tentTypes.data, isLoading: tentTypes.isLoading, create: createTentType, update: updateTentType, del: deleteTentType },
+    'tent-seasons': { title: t('dictionaries.tentSeasons'), items: tentSeasons.data, isLoading: tentSeasons.isLoading, create: createTentSeason, update: updateTentSeason, del: deleteTentSeason },
+    'accessory-brands': { title: t('dictionaries.accessoryBrands'), items: accessoryBrands.data, isLoading: accessoryBrands.isLoading, create: createAccessoryBrand, update: updateAccessoryBrand, del: deleteAccessoryBrand },
+    'accessory-types': { title: t('dictionaries.accessoryTypes'), items: accessoryTypes.data, isLoading: accessoryTypes.isLoading, create: createAccessoryType, update: updateAccessoryType, del: deleteAccessoryType },
+    'accessory-seasons': { title: t('dictionaries.accessorySeasons'), items: accessorySeasons.data, isLoading: accessorySeasons.isLoading, create: createAccessorySeason, update: updateAccessorySeason, del: deleteAccessorySeason },
   };
 
   const current = tabData[tab];
@@ -188,24 +192,24 @@ export const AdminSettingsPage = () => {
     <div className="mx-auto max-w-3xl px-4 py-8 md:px-6">
       <Button variant="ghost" size="sm" className="mb-4" onClick={() => navigate(-1)}>
         <ArrowLeft className="h-4 w-4 mr-1" />
-        Назад
+        {t('dictionaries.back')}
       </Button>
 
-      <h2 className="text-3xl font-bold tracking-tight mb-6">Справочники</h2>
+      <h2 className="text-3xl font-bold tracking-tight mb-6">{t('dictionaries.title')}</h2>
 
       <div className="flex flex-wrap gap-2 mb-6 border-b pb-1">
-        {TABS.map((t) => (
+        {TABS.map((tItem) => (
           <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
+            key={tItem.key}
+            onClick={() => setTab(tItem.key)}
             className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-t-lg transition-colors ${
-              tab === t.key
+              tab === tItem.key
                 ? 'bg-primary text-primary-foreground'
                 : 'text-muted-foreground hover:text-foreground hover:bg-accent'
             }`}
           >
-            {t.icon}
-            {t.label}
+            {tItem.icon}
+            {tItem.label}
           </button>
         ))}
       </div>
@@ -217,6 +221,7 @@ export const AdminSettingsPage = () => {
         create={current.create}
         update={current.update}
         del={current.del}
+        t={t}
       />
     </div>
   );

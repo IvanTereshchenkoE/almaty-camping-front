@@ -4,8 +4,10 @@ import { Button } from '@/shared/ui/button';
 import { useRevealOnScroll } from '@/shared/lib/use-reveal-on-scroll';
 import { cn } from '@/shared/lib/cn';
 import { ArrowRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export function HomeCta() {
+  const { t } = useTranslation('home');
   const { ref, isVisible } = useRevealOnScroll<HTMLDivElement>();
 
   return (
@@ -18,17 +20,15 @@ export function HomeCta() {
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
           )}
         >
-          {/* Decorative circles */}
           <div className="pointer-events-none absolute -left-20 -top-20 h-64 w-64 rounded-full bg-emerald-800/40" />
           <div className="pointer-events-none absolute -bottom-16 -right-16 h-48 w-48 rounded-full bg-emerald-800/40" />
 
           <div className="relative z-10">
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-              Готовы к выходным на природе?
+              {t('cta.title')}
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-base text-white/75 md:text-lg">
-              Выбери палатку из каталога, укажи даты — и мы всё подготовим.
-              Останется только собрать рюкзак.
+              {t('cta.description')}
             </p>
             <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
               <Link to={ROUTES.CATALOG}>
@@ -36,12 +36,12 @@ export function HomeCta() {
                   size="lg"
                   className="min-w-[220px] bg-white text-emerald-950 font-semibold shadow-lg hover:bg-emerald-50"
                 >
-                  Перейти в каталог
+                  {t('cta.button')}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
               <p className="text-xs text-white/50 sm:hidden">
-                Доставка, бронь и подбор палатки — онлайн
+                {t('cta.hint')}
               </p>
             </div>
           </div>

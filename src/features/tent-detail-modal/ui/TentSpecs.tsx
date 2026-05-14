@@ -1,5 +1,6 @@
 import { Badge } from '@/shared/ui/badge';
 import { Users, Sun, Layers, Weight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   capacity: number;
@@ -11,12 +12,14 @@ interface Props {
 }
 
 export const TentSpecs = ({ capacity, season, type, weight, availableQuantity, totalQuantity }: Props) => {
+  const { t } = useTranslation('catalog');
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
         <Badge variant="secondary" className="gap-1 rounded-full bg-stone-100 text-slate-700 border border-emerald-900/10 font-normal">
           <Users className="h-3 w-3" />
-          {capacity} чел.
+          {capacity} {t('card.people')}
         </Badge>
         {season && (
           <Badge variant="secondary" className="gap-1 rounded-full bg-stone-100 text-slate-700 border border-emerald-900/10 font-normal">
@@ -32,13 +35,13 @@ export const TentSpecs = ({ capacity, season, type, weight, availableQuantity, t
         )}
         <Badge variant="secondary" className="gap-1 rounded-full bg-stone-100 text-slate-700 border border-emerald-900/10 font-normal">
           <Weight className="h-3 w-3" />
-          {weight} кг
+          {weight} {t('card.kg')}
         </Badge>
       </div>
 
       {totalQuantity !== undefined && (
         <p className="text-sm text-slate-500">
-          Доступно: <span className="font-medium text-slate-700">{availableQuantity ?? totalQuantity} из {totalQuantity}</span>
+          {t('card.available', { available: availableQuantity ?? totalQuantity, total: totalQuantity })}
         </p>
       )}
     </div>

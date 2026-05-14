@@ -1,0 +1,75 @@
+{
+  "stepper": {
+    "equipment": "Equipment",
+    "contacts": "Contacts",
+    "review": "Review",
+    "done": "Done"
+  },
+  "orderPage": {
+    "accessoriesTitle": "Additional equipment",
+    "noAccessories": "No available equipment for selected dates",
+    "total": "Total",
+    "continue": "Continue"
+  },
+  "contactsPage": {
+    "title": "Contact details",
+    "subtitle": "Provide your details so we can contact you to confirm the order",
+    "back": "Back",
+    "next": "Next"
+  },
+  "summaryPage": {
+    "title": "Review your order",
+    "dates": "Dates",
+    "composition": "Order composition",
+    "contacts": "Contacts",
+    "phone": "Phone",
+    "telegram": "Telegram",
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "comment": "Comment",
+    "back": "Back",
+    "submit": "Submit order",
+    "day_one": "day",
+    "day_other": "days"
+  },
+  "successPage": {
+    "title": "Order submitted",
+    "message": "We will contact you shortly to confirm the rental details.",
+    "orderNumber": "Order number",
+    "total": "Total",
+    "myOrders": "My orders",
+    "home": "Home"
+  },
+  "contactForm": {
+    "name": "Name",
+    "namePlaceholder": "How should we address you",
+    "phone": "Phone",
+    "phonePlaceholder": "+7 (___) ___-__-__",
+    "telegram": "Telegram",
+    "telegramPlaceholder": "@username",
+    "whatsapp": "WhatsApp",
+    "whatsappPlaceholder": "+7 (___) ___-__-__",
+    "email": "Email",
+    "emailPlaceholder": "email@example.com",
+    "comment": "Comment",
+    "commentPlaceholder": "Additional requests",
+    "required": "Required field",
+    "invalidPhone": "Enter a valid phone number"
+  },
+  "summaryCard": {
+    "yourOrder": "Your order",
+    "rentalDays": "{{count}} {{unit}}",
+    "rentalTotal": "Rental total",
+    "tent": "Tent",
+    "accessories": "Additional",
+    "total": "Total",
+    "remove": "Remove"
+  },
+  "stepper": {
+    "step": "Step",
+    "equipment": "Equipment",
+    "contacts": "Contacts",
+    "review": "Review",
+    "done": "Done"
+  }
+}

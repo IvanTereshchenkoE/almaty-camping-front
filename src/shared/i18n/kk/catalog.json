@@ -1,0 +1,72 @@
+{
+  "pageTitle": "Шатырлар каталогы",
+  "pageSubtitle": "Күндерді таңдаңыз және жоспарыңызға сай шатырды таңдаңыз",
+  "sort": {
+    "label": "Сұрыптау:",
+    "availability": "Алдымен қол жетімді",
+    "priceAsc": "Алдымен арзан",
+    "priceDesc": "Алдымен қымбат",
+    "capacity": "Сыйымдылық бойынша",
+    "weight": "Салмақ бойынша"
+  },
+  "found": "Табылды: {{count}} шатыр",
+  "filters": "Сүзгілер",
+  "reset": "Қалпына келтіру",
+  "resetAll": "Барлығын қалпына келтіру",
+  "showResults": "{{count}} шатырды көрсету",
+  "error": "Шатырларды жүктеу мүмкін болмады",
+  "retry": "Қайталау",
+  "noResults": "Шатырлар табылмады",
+  "noResultsHint": "Күндерді өзгертіп немесе сүзгілерді қалпына келтіруді көріңіз",
+  "pagination": {
+    "prev": "Артқа",
+    "next": "Алға"
+  },
+  "card": {
+    "outOfStock": "Қол жетімсіз",
+    "inStock": "Қол жетімді",
+    "people": "адам",
+    "kg": "кг",
+    "noDescription": "Сипаттамасы жоқ",
+    "available": "Қол жетімді: {{available}} / {{total}}",
+    "pricePerDay": "{{price}} ₸/тәулік",
+    "select": "Таңдау",
+    "unavailable": "Үзіліс"
+  },
+  "detail": {
+    "description": "Сипаттама",
+    "characteristics": "Сипаттамалары",
+    "type": "Конструкция түрі",
+    "season": "Маусым",
+    "weight": "Салмақ",
+    "capacity": "Сыйымдылық",
+    "close": "Жабу",
+    "totalFor": "{{days}} {{unit}} үшін барлығы",
+    "chooseDates": "Жалға алу күндерін таңдаңыз"
+  },
+  "filtersPanel": {
+    "title": "Сүзгілер",
+    "price": "Баға",
+    "capacity": "Сыйымдылық",
+    "season": "Маусым",
+    "type": "Конструкция түрі",
+    "maxWeight": "Ең көп салмақ",
+    "brand": "Бренд",
+    "from": "бастап",
+    "to": "дейін",
+    "person_one": "адам",
+    "person_few": "адам",
+    "person_many": "адам"
+  },
+  "datePanel": {
+    "title": "Жалға алу күндері",
+    "subtitle": "Қол жетімділікті тексеру үшін кезеңді таңдаңыз",
+    "days": "Тәулік:"
+  },
+  "dateRange": {
+    "today": "Бүгін",
+    "tomorrow": "Ертең",
+    "week": "Бір аптаға",
+    "weekend": "Демалысқа"
+  }
+}

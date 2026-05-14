@@ -1,0 +1,76 @@
+{
+  "hero": {
+    "badge": "Tent rental in Almaty",
+    "title1": "Camping in Almaty",
+    "title2": "simple and convenient",
+    "description": "We're not professional alpinists. We're ordinary people who love nature. Rent a tent or buy your own — and head to the mountains for the weekend.",
+    "ctaCatalog": "Browse tents",
+    "ctaLocations": "Popular places",
+    "metrics": {
+      "distance": "450 km",
+      "distanceDesc": "around Almaty",
+      "delivery": "Delivery",
+      "deliveryDesc": "to the start point",
+      "noDeposit": "No deposit",
+      "noDepositDesc": "and no extra documents",
+      "online": "Online",
+      "onlineDesc": "booking"
+    }
+  },
+  "benefits": {
+    "title": "Why choose us",
+    "subtitle": "We hike ourselves and know what's important — reliable gear, honest prices, and no bureaucracy.",
+    "cards": {
+      "nearCity": {
+        "title": "Close to the city",
+        "desc": "All locations within 450 km of Almaty — from Kolsay to Altyn-Emel."
+      },
+      "delivery": {
+        "title": "Delivery",
+        "desc": "We'll bring the tent to your starting point or pick it up after the hike."
+      },
+      "simple": {
+        "title": "Simple rental",
+        "desc": "No deposit and no extra documents. Online booking in a couple of minutes."
+      },
+      "forAll": {
+        "title": "For everyone",
+        "desc": "From beginners to experienced. We'll pick a tent for your level and season."
+      }
+    }
+  },
+  "locations": {
+    "title": "Popular camping spots",
+    "subtitle": "From mountain lakes to steppe canyons — choose a location for your plans.",
+    "addLocation": "Add location",
+    "deleteConfirm": "Delete this location?",
+    "form": {
+      "createTitle": "New location",
+      "editTitle": "Edit location"
+    },
+    "card": {
+      "kmFromAlmaty": "{{distance}} km",
+      "details": "Details",
+      "featuresMore": "+{{count}}"
+    },
+    "detail": {
+      "label": "Camping location",
+      "kmFromAlmaty": "{{distance}} km from Almaty",
+      "featuresTitle": "Features",
+      "convenienceTitle": "What's convenient",
+      "convenienceItems": [
+        "Great for a weekend trip",
+        "Can choose a tent for the route",
+        "Delivery discussed upon booking"
+      ],
+      "ctaCatalog": "Go to catalog",
+      "close": "Close"
+    }
+  },
+  "cta": {
+    "title": "Ready for a nature getaway?",
+    "description": "Pick a tent from the catalog, select dates — and we'll prepare everything. Just pack your backpack.",
+    "button": "Go to catalog",
+    "hint": "Delivery, booking and tent selection — online"
+  }
+}

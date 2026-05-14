@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAccessoryCategories, useCreateAccessoryCategory, useDeleteAccessoryCategory } from '@/entities/accessory-category/model/use-accessory-categories';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -8,6 +9,7 @@ import { Loader2, Trash2, Plus, ArrowLeft } from 'lucide-react';
 import { ROUTES } from '@/shared/config';
 
 export const AdminCategoriesPage = () => {
+  const { t } = useTranslation('admin');
   const navigate = useNavigate();
   const [name, setName] = useState('');
   const { data: categories, isLoading } = useAccessoryCategories();
@@ -26,25 +28,25 @@ export const AdminCategoriesPage = () => {
     <div className="mx-auto max-w-2xl px-4 py-8 md:px-6">
       <Button variant="ghost" size="sm" className="mb-4" onClick={() => navigate(ROUTES.ADMIN_INVENTORY_ACCESSORIES)}>
         <ArrowLeft className="h-4 w-4 mr-1" />
-        Назад
+        {t('categories.back')}
       </Button>
 
-      <h2 className="text-3xl font-bold tracking-tight mb-8">Категории периферии</h2>
+      <h2 className="text-3xl font-bold tracking-tight mb-8">{t('categories.title')}</h2>
 
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>Новая категория</CardTitle>
+          <CardTitle>{t('categories.newCategory')}</CardTitle>
         </CardHeader>
         <CardContent className="flex gap-2">
           <Input
-            placeholder="Название категории"
+            placeholder={t('categories.categoryName')}
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
           />
           <Button onClick={handleCreate} disabled={create.isPending || !name.trim()}>
             <Plus className="h-4 w-4 mr-1" />
-            Добавить
+            {t('categories.add')}
           </Button>
         </CardContent>
       </Card>
@@ -65,7 +67,7 @@ export const AdminCategoriesPage = () => {
                 variant="ghost"
                 size="icon"
                 onClick={() => {
-                  if (confirm(`Удалить категорию "${cat.name}"?`)) remove.mutate(cat.id);
+                  if (confirm(t('categories.deleteConfirm', { name: cat.name }))) remove.mutate(cat.id);
                 }}
                 disabled={remove.isPending}
               >
@@ -74,7 +76,7 @@ export const AdminCategoriesPage = () => {
             </div>
           ))}
           {!categories?.length && (
-            <p className="text-center text-muted-foreground py-8">Нет категорий</p>
+            <p className="text-center text-muted-foreground py-8">{t('categories.noCategories')}</p>
           )}
         </div>
       )}

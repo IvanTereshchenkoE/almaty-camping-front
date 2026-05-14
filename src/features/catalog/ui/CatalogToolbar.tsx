@@ -1,6 +1,7 @@
 import { SlidersHorizontal, ArrowUpDown, X } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { Badge } from '@/shared/ui/badge';
+import { useTranslation } from 'react-i18next';
 
 export type SortOption = 'availability' | 'price_asc' | 'price_desc' | 'capacity' | 'weight';
 
@@ -15,14 +16,6 @@ interface Props {
   onOpenMobileSort: () => void;
 }
 
-const SORT_LABELS: Record<SortOption, string> = {
-  availability: 'Сначала доступные',
-  price_asc: 'Сначала дешевле',
-  price_desc: 'Сначала дороже',
-  capacity: 'По вместимости',
-  weight: 'По весу',
-};
-
 export const CatalogToolbar = ({
   total,
   activeFiltersCount,
@@ -33,24 +26,34 @@ export const CatalogToolbar = ({
   onOpenMobileFilters,
   onOpenMobileSort,
 }: Props) => {
+  const { t } = useTranslation('catalog');
+
+  const sortLabels: Record<SortOption, string> = {
+    availability: t('sort.availability'),
+    price_asc: t('sort.priceAsc'),
+    price_desc: t('sort.priceDesc'),
+    capacity: t('sort.capacity'),
+    weight: t('sort.weight'),
+  };
+
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm font-medium text-slate-700">
-          Найдено: <span className="text-slate-900">{total} палаток</span>
+          {t('found', { count: total })}
         </p>
 
         <div className="flex items-center gap-2">
           <div className="hidden md:flex items-center gap-2">
-            <span className="text-sm text-slate-500">Сортировка:</span>
+            <span className="text-sm text-slate-500">{t('sort.label')}</span>
             <select
               value={sort}
               onChange={(e) => onSortChange(e.target.value as SortOption)}
               className="h-9 rounded-xl border border-emerald-900/10 bg-white px-3 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500/20"
             >
-              {(Object.keys(SORT_LABELS) as SortOption[]).map((key) => (
+              {(Object.keys(sortLabels) as SortOption[]).map((key) => (
                 <option key={key} value={key}>
-                  {SORT_LABELS[key]}
+                  {sortLabels[key]}
                 </option>
               ))}
             </select>
@@ -64,7 +67,7 @@ export const CatalogToolbar = ({
               onClick={onOpenMobileFilters}
             >
               <SlidersHorizontal className="mr-1.5 h-4 w-4" />
-              Фильтры
+              {t('filters')}
               {activeFiltersCount > 0 && (
                 <span className="ml-1.5 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-emerald-700 px-1 text-[10px] font-bold text-white">
                   {activeFiltersCount}
@@ -78,7 +81,7 @@ export const CatalogToolbar = ({
               onClick={onOpenMobileSort}
             >
               <ArrowUpDown className="mr-1.5 h-4 w-4" />
-              {SORT_LABELS[sort]}
+              {sortLabels[sort]}
             </Button>
           </div>
         </div>
@@ -101,7 +104,7 @@ export const CatalogToolbar = ({
             onClick={onResetFilters}
             className="text-xs font-medium text-emerald-700 hover:text-emerald-800 transition-colors"
           >
-            Сбросить всё
+            {t('resetAll')}
           </button>
         </div>
       )}

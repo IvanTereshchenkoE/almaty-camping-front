@@ -17,40 +17,35 @@ import { Button } from '@/shared/ui/button';
 import { useAuthStore } from '@/entities/user/model';
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/shared/lib/cn';
-
-const NAV_ITEMS = [
-  { to: ROUTES.HOME, label: 'Главная', icon: Home },
-  { to: ROUTES.CATALOG, label: 'Каталог палаток', icon: ShoppingBag },
-];
-
-const ADMIN_ITEMS = [
-  { to: ROUTES.ADMIN_ORDERS, label: 'Заказы', icon: ClipboardList },
-  { to: ROUTES.ADMIN_INVENTORY_TENTS, label: 'Склад', icon: Package },
-  { to: ROUTES.ADMIN_ANALYTICS, label: 'Аналитика', icon: BarChart3 },
-  { to: ROUTES.ADMIN_SETTINGS, label: 'Справочники', icon: Settings },
-];
-
-function isActive(pathname: string, to: string, exact = false) {
-  if (exact) return pathname === to;
-  return pathname === to || pathname.startsWith(to + '/');
-}
+import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '@/features/language-switcher/ui/LanguageSwitcher';
 
 export const Header = () => {
+  const { t } = useTranslation('common');
   const location = useLocation();
   const { isAuth, isAdmin, logout } = useAuthStore();
   const [mobileOpen, setMobileOpen] = useState(false);
   const mobileRef = useRef<HTMLDivElement>(null);
 
-  // Admin gets xl breakpoint (~1280px), regular users get md (768px)
   const desktopBP = isAdmin ? 'xl' : 'md';
   const mobileBP = isAdmin ? 'xl' : 'md';
 
-  // Close mobile menu on route change
+  const navItems = [
+    { to: ROUTES.HOME, label: t('nav.home'), icon: Home },
+    { to: ROUTES.CATALOG, label: t('nav.catalog'), icon: ShoppingBag },
+  ];
+
+  const adminItems = [
+    { to: ROUTES.ADMIN_ORDERS, label: t('nav.admin.orders'), icon: ClipboardList },
+    { to: ROUTES.ADMIN_INVENTORY_TENTS, label: t('nav.admin.inventory'), icon: Package },
+    { to: ROUTES.ADMIN_ANALYTICS, label: t('nav.admin.analytics'), icon: BarChart3 },
+    { to: ROUTES.ADMIN_SETTINGS, label: t('nav.admin.settings'), icon: Settings },
+  ];
+
   useEffect(() => {
     setMobileOpen(false);
   }, [location.pathname]);
 
-  // Close on click outside
   useEffect(() => {
     if (!mobileOpen) return;
     const handler = (e: MouseEvent) => {
@@ -61,6 +56,11 @@ export const Header = () => {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [mobileOpen]);
+
+  function isActive(pathname: string, to: string, exact = false) {
+    if (exact) return pathname === to;
+    return pathname === to || pathname.startsWith(to + '/');
+  }
 
   const desktopNavLink = (item: { to: string; label: string; icon?: React.ElementType }, exact = false) => {
     const active = isActive(location.pathname, item.to, exact);
@@ -93,7 +93,7 @@ export const Header = () => {
           <span className="text-lg font-bold tracking-tight hidden sm:inline">Almaty Camping</span>
         </Link>
 
-        {/* Desktop nav — conditional breakpoint */}
+        {/* Desktop nav */}
         <nav
           className={cn(
             'hidden items-center',
@@ -101,14 +101,20 @@ export const Header = () => {
           )}
         >
           <div className="flex items-center gap-[3px] rounded-full border border-emerald-950/10 bg-emerald-950/[0.03] p-[5px]">
-            {NAV_ITEMS.map((item) => desktopNavLink(item, item.to === ROUTES.HOME))}
-            {desktopNavLink({ to: ROUTES.MY_ORDERS, label: 'Мои заказы', icon: ListOrdered })}
-            {isAdmin && ADMIN_ITEMS.map((item) => desktopNavLink(item))}
+            {navItems.map((item) => desktopNavLink(item, item.to === ROUTES.HOME))}
+            {desktopNavLink({ to: ROUTES.MY_ORDERS, label: t('nav.myOrders'), icon: ListOrdered })}
+            {isAdmin && adminItems.map((item) => desktopNavLink(item))}
           </div>
         </nav>
 
         {/* Right side */}
         <div className="flex items-center gap-2 shrink-0">
+          <div className={cn(
+            mobileBP === 'xl' ? 'hidden xl:flex' : 'hidden md:flex'
+          )}>
+            <LanguageSwitcher />
+          </div>
+
           {isAdmin && isAuth && (
             <Button
               variant="ghost"
@@ -120,7 +126,7 @@ export const Header = () => {
               )}
             >
               <LogOut className="h-4 w-4 mr-1" />
-              Выйти
+              {t('nav.logout')}
             </Button>
           )}
 
@@ -132,14 +138,14 @@ export const Header = () => {
               mobileBP === 'xl' ? 'xl:hidden' : 'md:hidden'
             )}
             onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label={mobileOpen ? 'Закрыть меню' : 'Открыть меню'}
+            aria-label={mobileOpen ? t('nav.closeMenu') : t('nav.openMenu')}
           >
             {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </Button>
         </div>
       </div>
 
-      {/* Mobile dropdown — conditional breakpoint */}
+      {/* Mobile dropdown */}
       {mobileOpen && (
         <div
           className={cn(
@@ -148,7 +154,10 @@ export const Header = () => {
           )}
         >
           <div className="space-y-1 p-4 max-w-7xl mx-auto">
-            {[...NAV_ITEMS, { to: ROUTES.MY_ORDERS, label: 'Мои заказы', icon: ListOrdered }].map((item) => {
+            <div className="flex items-center justify-between px-3 py-2">
+              <LanguageSwitcher />
+            </div>
+            {[...navItems, { to: ROUTES.MY_ORDERS, label: t('nav.myOrders'), icon: ListOrdered }].map((item) => {
               const active = isActive(location.pathname, item.to, item.to === ROUTES.HOME);
               return (
                 <Link
@@ -171,9 +180,9 @@ export const Header = () => {
             {isAdmin && (
               <div className="pt-2 mt-2 border-t border-slate-100">
                 <p className="px-3 pb-1 text-xs font-medium text-slate-400 uppercase tracking-wider">
-                  Админ
+                  {t('nav.admin.title', 'Админ')}
                 </p>
-                {ADMIN_ITEMS.map((item) => {
+                {adminItems.map((item) => {
                   const active = isActive(location.pathname, item.to);
                   return (
                     <Link

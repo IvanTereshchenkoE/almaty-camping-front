@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAnalytics } from '@/entities/order/model/use-admin-orders';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
@@ -15,17 +16,11 @@ const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'
 
 type TabKey = 'orders' | 'tents' | 'accessories';
 
-const TAB_CONFIG: Record<TabKey, { label: string; icon: React.ReactNode }> = {
-  orders: { label: 'Заказы', icon: <ShoppingCart className="h-4 w-4" /> },
-  tents: { label: 'Палатки', icon: <Tent className="h-4 w-4" /> },
-  accessories: { label: 'Периферия', icon: <Puzzle className="h-4 w-4" /> },
-};
-
 function formatValue(value: number, name: string) {
-  if (String(name).includes('Выручка')) {
-    return `${Number(value).toLocaleString('ru-RU')} ₸`;
+  if (String(name).includes('₸')) {
+    return `${Number(value).toLocaleString()} ₸`;
   }
-  return `${value} шт.`;
+  return `${value} ${name.includes('Count') ? 'pcs' : 'pcs'}`;
 }
 
 function BarTooltip({ active, payload, label }: any) {
@@ -61,7 +56,8 @@ function LineTooltip({ active, payload, label }: any) {
 }
 
 function TopChart({ data, nameKey, valueKey, formatter }: { data: any[]; nameKey: string; valueKey: string; formatter?: (v: number) => string }) {
-  if (!data.length) return <p className="text-sm text-muted-foreground">Нет данных</p>;
+  const { t } = useTranslation('admin');
+  if (!data.length) return <p className="text-sm text-muted-foreground">{t('analytics.noDataTooltip')}</p>;
   return (
     <ResponsiveContainer width="100%" height={280}>
       <PieChart>
@@ -80,49 +76,52 @@ function TopChart({ data, nameKey, valueKey, formatter }: { data: any[]; nameKey
             <Cell key={`cell-${i}`} fill={COLORS[i % COLORS.length]} />
           ))}
         </Pie>
-        <Tooltip formatter={(value: number) => (formatter ? formatter(value) : `${value} шт.`)} />
+        <Tooltip formatter={(value: number) => (formatter ? formatter(value) : `${value}`)} />
       </PieChart>
     </ResponsiveContainer>
   );
 }
 
-function WeeklyChart({ data }: { data: any[] }) {
-  if (!data.length) return <p className="text-sm text-muted-foreground">Нет данных</p>;
+function WeeklyChart({ data, countLabel, revenueLabel }: { data: any[]; countLabel: string; revenueLabel: string }) {
+  const { t } = useTranslation('admin');
+  if (!data.length) return <p className="text-sm text-muted-foreground">{t('analytics.noDataTooltip')}</p>;
   return (
     <ResponsiveContainer width="100%" height={280}>
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="week" tick={{ fontSize: 11 }} interval={0} angle={data.length > 6 ? -30 : 0} textAnchor={data.length > 6 ? 'end' : 'middle'} height={data.length > 6 ? 50 : 30} />
         <YAxis yAxisId="left" allowDecimals={false} />
-        <YAxis yAxisId="right" orientation="right" tickFormatter={(v) => v.toLocaleString('ru-RU')} />
+        <YAxis yAxisId="right" orientation="right" tickFormatter={(v) => v.toLocaleString()} />
         <Tooltip content={<BarTooltip />} />
         <Legend />
-        <Bar yAxisId="left" dataKey="count" name="Количество" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-        <Bar yAxisId="right" dataKey="revenue" name="Выручка (₸)" fill="#10b981" radius={[4, 4, 0, 0]} />
+        <Bar yAxisId="left" dataKey="count" name={countLabel} fill="#3b82f6" radius={[4, 4, 0, 0]} />
+        <Bar yAxisId="right" dataKey="revenue" name={revenueLabel} fill="#10b981" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );
 }
 
-function MonthlyChart({ data }: { data: any[] }) {
-  if (!data.length) return <p className="text-sm text-muted-foreground">Нет данных</p>;
+function MonthlyChart({ data, countLabel, revenueLabel }: { data: any[]; countLabel: string; revenueLabel: string }) {
+  const { t } = useTranslation('admin');
+  if (!data.length) return <p className="text-sm text-muted-foreground">{t('analytics.noDataTooltip')}</p>;
   return (
     <ResponsiveContainer width="100%" height={280}>
       <LineChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="month" tick={{ fontSize: 12 }} />
         <YAxis yAxisId="left" allowDecimals={false} />
-        <YAxis yAxisId="right" orientation="right" tickFormatter={(v) => v.toLocaleString('ru-RU')} />
+        <YAxis yAxisId="right" orientation="right" tickFormatter={(v) => v.toLocaleString()} />
         <Tooltip content={<LineTooltip />} />
         <Legend />
-        <Line yAxisId="left" type="monotone" dataKey="count" name="Количество" stroke="#3b82f6" strokeWidth={2} dot={{ r: 4 }} />
-        <Line yAxisId="right" type="monotone" dataKey="revenue" name="Выручка (₸)" stroke="#10b981" strokeWidth={2} dot={{ r: 4 }} />
+        <Line yAxisId="left" type="monotone" dataKey="count" name={countLabel} stroke="#3b82f6" strokeWidth={2} dot={{ r: 4 }} />
+        <Line yAxisId="right" type="monotone" dataKey="revenue" name={revenueLabel} stroke="#10b981" strokeWidth={2} dot={{ r: 4 }} />
       </LineChart>
     </ResponsiveContainer>
   );
 }
 
 export const AdminAnalyticsPage = () => {
+  const { t } = useTranslation('admin');
   const navigate = useNavigate();
   const [tab, setTab] = useState<TabKey>('orders');
   const [startDate, setStartDate] = useState(() => {
@@ -141,22 +140,28 @@ export const AdminAnalyticsPage = () => {
     return current.byItem;
   }, [current]);
 
+  const TAB_CONFIG: Record<TabKey, { label: string; icon: React.ReactNode }> = {
+    orders: { label: t('analytics.ordersTab'), icon: <ShoppingCart className="h-4 w-4" /> },
+    tents: { label: t('analytics.tentsTab'), icon: <Tent className="h-4 w-4" /> },
+    accessories: { label: t('analytics.accessoriesTab'), icon: <Puzzle className="h-4 w-4" /> },
+  };
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 md:px-6">
       <Button variant="ghost" size="sm" className="mb-4" onClick={() => navigate(-1)}>
         <ArrowLeft className="h-4 w-4 mr-1" />
-        Назад
+        {t('analytics.back')}
       </Button>
 
-      <h2 className="text-3xl font-bold tracking-tight mb-6">Аналитика</h2>
+      <h2 className="text-3xl font-bold tracking-tight mb-6">{t('analytics.title')}</h2>
 
       <div className="flex flex-wrap gap-4 items-end mb-6">
         <div className="space-y-2">
-          <Label>С</Label>
+          <Label>{t('analytics.from')}</Label>
           <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
         </div>
         <div className="space-y-2">
-          <Label>По</Label>
+          <Label>{t('analytics.to')}</Label>
           <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
         </div>
       </div>
@@ -185,7 +190,7 @@ export const AdminAnalyticsPage = () => {
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       ) : !current ? (
-        <div className="text-center py-24 text-muted-foreground">Нет данных за выбранный период</div>
+        <div className="text-center py-24 text-muted-foreground">{t('analytics.noData')}</div>
       ) : (
         <div className="space-y-8">
           {/* Summary */}
@@ -193,7 +198,7 @@ export const AdminAnalyticsPage = () => {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {tab === 'orders' ? 'Завершённых заказов' : 'Всего выдано'}
+                  {tab === 'orders' ? t('analytics.completedOrders') : t('analytics.totalIssued')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -202,22 +207,22 @@ export const AdminAnalyticsPage = () => {
             </Card>
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Выручка</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">{t('analytics.revenue')}</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">{(current.totalRevenue || 0).toLocaleString('ru-RU')} ₸</div>
+                <div className="text-3xl font-bold">{(current.totalRevenue || 0).toLocaleString()} ₸</div>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {tab === 'orders' ? 'Средний чек' : 'Позиций'}
+                  {tab === 'orders' ? t('analytics.avgCheck') : t('analytics.items')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold">
                   {tab === 'orders'
-                    ? `${current.totalCount > 0 ? Math.round(current.totalRevenue / current.totalCount).toLocaleString('ru-RU') : 0} ₸`
+                    ? `${current.totalCount > 0 ? Math.round(current.totalRevenue / current.totalCount).toLocaleString() : 0} ₸`
                     : (current.byItem?.length || 0)}
                 </div>
               </CardContent>
@@ -229,7 +234,7 @@ export const AdminAnalyticsPage = () => {
             <div className="grid gap-6 md:grid-cols-2">
               <Card>
                 <CardHeader>
-                  <CardTitle>Топ по количеству</CardTitle>
+                  <CardTitle>{t('analytics.topByCount')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <TopChart data={pieData} nameKey="name" valueKey="count" />
@@ -237,10 +242,10 @@ export const AdminAnalyticsPage = () => {
               </Card>
               <Card>
                 <CardHeader>
-                  <CardTitle>Топ по выручке</CardTitle>
+                  <CardTitle>{t('analytics.topByRevenue')}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <TopChart data={pieData} nameKey="name" valueKey="revenue" formatter={(v) => `${v.toLocaleString('ru-RU')} ₸`} />
+                  <TopChart data={pieData} nameKey="name" valueKey="revenue" formatter={(v) => `${v.toLocaleString()} ₸`} />
                 </CardContent>
               </Card>
             </div>
@@ -249,20 +254,20 @@ export const AdminAnalyticsPage = () => {
           {/* Weekly */}
           <Card>
             <CardHeader>
-              <CardTitle>По неделям</CardTitle>
+              <CardTitle>{t('analytics.byWeeks')}</CardTitle>
             </CardHeader>
             <CardContent>
-              <WeeklyChart data={current.weekly || []} />
+              <WeeklyChart data={current.weekly || []} countLabel={t('analytics.count')} revenueLabel={t('analytics.revenueTg')} />
             </CardContent>
           </Card>
 
           {/* Monthly */}
           <Card>
             <CardHeader>
-              <CardTitle>По месяцам</CardTitle>
+              <CardTitle>{t('analytics.byMonths')}</CardTitle>
             </CardHeader>
             <CardContent>
-              <MonthlyChart data={current.monthly || []} />
+              <MonthlyChart data={current.monthly || []} countLabel={t('analytics.count')} revenueLabel={t('analytics.revenueTg')} />
             </CardContent>
           </Card>
         </div>
