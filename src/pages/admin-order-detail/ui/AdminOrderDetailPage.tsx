@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   useAdminOrder,
   useUpdateOrderStatus,
@@ -27,12 +28,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/ui/select';
-import { statusLabels, statusColors, transitions, allStatuses } from '@/shared/config/order-status';
+import { statusColors, transitions, allStatuses } from '@/shared/config/order-status';
 import { Loader2, ArrowLeft, Clock, Settings } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/shared/lib/cn';
 
 export const AdminOrderDetailPage = () => {
+  const { t } = useTranslation('admin');
   const { orderId } = useParams<{ orderId: string }>();
   const navigate = useNavigate();
   const { data: order, isLoading } = useAdminOrder(orderId || '');
@@ -63,8 +65,8 @@ export const AdminOrderDetailPage = () => {
   if (!order) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-16 text-center">
-        <h2 className="text-2xl font-bold mb-4">Заказ не найден</h2>
-        <Button onClick={() => navigate(-1)}>Назад</Button>
+        <h2 className="text-2xl font-bold mb-4">{t('orderDetail.notFound')}</h2>
+        <Button onClick={() => navigate(-1)}>{t('orderDetail.back')}</Button>
       </div>
     );
   }
@@ -105,17 +107,17 @@ export const AdminOrderDetailPage = () => {
     <div className="mx-auto max-w-4xl px-4 py-8 md:px-6">
       <Button variant="ghost" size="sm" className="mb-4" onClick={() => navigate(-1)}>
         <ArrowLeft className="h-4 w-4 mr-1" />
-        Назад
+        {t('orderDetail.back')}
       </Button>
 
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <h2 className="text-3xl font-bold tracking-tight">{order.orderNumber}</h2>
         <div className="flex items-center gap-2">
           {(order as any).isArchived && (
-            <Badge variant="secondary">Архив</Badge>
+            <Badge variant="secondary">{t('orderDetail.archiveBadge')}</Badge>
           )}
           <Badge className={cn('text-white', statusColors[order.status] || 'bg-gray-500')}>
-            {statusLabels[order.status] || order.status}
+            {t(`orders.status.${order.status}`) || order.status}
           </Badge>
         </div>
       </div>
@@ -123,34 +125,34 @@ export const AdminOrderDetailPage = () => {
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Клиент</CardTitle>
+            <CardTitle>{t('orderDetail.client')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
-            <p><span className="text-muted-foreground">Имя:</span> {order.clientName}</p>
-            <p><span className="text-muted-foreground">Телефон:</span> {order.phone}</p>
-            {order.telegram && <p><span className="text-muted-foreground">Telegram:</span> {order.telegram}</p>}
-            {order.whatsapp && <p><span className="text-muted-foreground">WhatsApp:</span> {order.whatsapp}</p>}
-            {order.email && <p><span className="text-muted-foreground">Email:</span> {order.email}</p>}
-            {order.comment && <p><span className="text-muted-foreground">Комментарий:</span> {order.comment}</p>}
+            <p><span className="text-muted-foreground">{t('orderDetail.name')}</span> {order.clientName}</p>
+            <p><span className="text-muted-foreground">{t('orderDetail.phone')}</span> {order.phone}</p>
+            {order.telegram && <p><span className="text-muted-foreground">{t('orderDetail.telegram')}</span> {order.telegram}</p>}
+            {order.whatsapp && <p><span className="text-muted-foreground">{t('orderDetail.whatsapp')}</span> {order.whatsapp}</p>}
+            {order.email && <p><span className="text-muted-foreground">{t('orderDetail.email')}</span> {order.email}</p>}
+            {order.comment && <p><span className="text-muted-foreground">{t('orderDetail.comment')}</span> {order.comment}</p>}
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Аренда</CardTitle>
+            <CardTitle>{t('orderDetail.rental')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
-            <p><span className="text-muted-foreground">Даты:</span> {new Date(order.startDate).toLocaleDateString('ru-KZ')} — {new Date(order.endDate).toLocaleDateString('ru-KZ')}</p>
-            <p><span className="text-muted-foreground">Суток:</span> {order.rentalDays}</p>
-            <p><span className="text-muted-foreground">Сумма:</span> <span className="font-medium">{order.totalAmount.toLocaleString()} ₸</span></p>
-            <p><span className="text-muted-foreground">Предоплата:</span> <span className="font-medium">{order.prepaymentAmount.toLocaleString()} ₸</span></p>
+            <p><span className="text-muted-foreground">{t('orderDetail.dates')}</span> {new Date(order.startDate).toLocaleDateString()} — {new Date(order.endDate).toLocaleDateString()}</p>
+            <p><span className="text-muted-foreground">{t('orderDetail.days')}</span> {order.rentalDays}</p>
+            <p><span className="text-muted-foreground">{t('orderDetail.sum')}</span> <span className="font-medium">{order.totalAmount.toLocaleString()} ₸</span></p>
+            <p><span className="text-muted-foreground">{t('orderDetail.prepayment')}</span> <span className="font-medium">{order.prepaymentAmount.toLocaleString()} ₸</span></p>
           </CardContent>
         </Card>
       </div>
 
       <Card className="mt-6">
         <CardHeader>
-          <CardTitle>Позиции заказа</CardTitle>
+          <CardTitle>{t('orderDetail.items')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="divide-y">
@@ -165,7 +167,7 @@ export const AdminOrderDetailPage = () => {
             ))}
           </div>
           <div className="border-t pt-3 flex justify-between font-bold">
-            <span>Итого</span>
+            <span>{t('orderDetail.total')}</span>
             <span>{order.totalAmount.toLocaleString()} ₸</span>
           </div>
         </CardContent>
@@ -173,8 +175,8 @@ export const AdminOrderDetailPage = () => {
 
       <Card className="mt-6">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Управление статусом</CardTitle>
-          <Button variant="ghost" size="icon" onClick={openManualModal} title="Ручная смена статуса">
+          <CardTitle>{t('orderDetail.statusControl')}</CardTitle>
+          <Button variant="ghost" size="icon" onClick={openManualModal} title={t('orderDetail.manualChange')}>
             <Settings className="h-5 w-5" />
           </Button>
         </CardHeader>
@@ -189,7 +191,7 @@ export const AdminOrderDetailPage = () => {
                   onClick={() => openConfirmModal(s)}
                   disabled={updateStatus.isPending}
                 >
-                  {statusLabels[s] || s}
+                  {t(`orders.status.${s}`) || s}
                 </Button>
               ))}
             </div>
@@ -198,7 +200,7 @@ export const AdminOrderDetailPage = () => {
           {order.status === 'CONFIRMED' && (
             <div className="flex flex-wrap items-end gap-2">
               <div className="space-y-2">
-                <Label htmlFor="prepay">Сумма предоплаты</Label>
+                <Label htmlFor="prepay">{t('orderDetail.prepaymentAmount')}</Label>
                 <Input
                   id="prepay"
                   type="number"
@@ -216,7 +218,7 @@ export const AdminOrderDetailPage = () => {
                 }}
                 disabled={updatePrepayment.isPending || !prepayAmount}
               >
-                Зафиксировать предоплату
+                {t('orderDetail.recordPrepayment')}
               </Button>
             </div>
           )}
@@ -230,7 +232,7 @@ export const AdminOrderDetailPage = () => {
                 disabled={archiveOrder.isPending}
               >
                 {archiveOrder.isPending && <Loader2 className="h-4 w-4 mr-1 animate-spin" />}
-                В архив
+                {t('orderDetail.toArchive')}
               </Button>
             </div>
           )}
@@ -242,28 +244,28 @@ export const AdminOrderDetailPage = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Clock className="h-5 w-5" />
-            История статусов
+            {t('orderDetail.statusHistory')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           {historyLoading ? (
             <Loader2 className="h-5 w-5 animate-spin" />
           ) : !statusHistory || statusHistory.length === 0 ? (
-            <p className="text-sm text-muted-foreground">История пуста</p>
+            <p className="text-sm text-muted-foreground">{t('orderDetail.historyEmpty')}</p>
           ) : (
             <div className="space-y-3">
               {statusHistory.map((h) => (
                 <div key={h.id} className="flex flex-col gap-1 border-l-2 border-primary pl-3 py-1">
                   <div className="flex flex-wrap items-center gap-2 text-sm">
                     <Badge className={cn('text-white text-xs', statusColors[h.fromStatus] || 'bg-gray-500')}>
-                      {statusLabels[h.fromStatus] || h.fromStatus}
+                      {t(`orders.status.${h.fromStatus}`) || h.fromStatus}
                     </Badge>
                     <span className="text-muted-foreground">→</span>
                     <Badge className={cn('text-white text-xs', statusColors[h.toStatus] || 'bg-gray-500')}>
-                      {statusLabels[h.toStatus] || h.toStatus}
+                      {t(`orders.status.${h.toStatus}`) || h.toStatus}
                     </Badge>
                     <span className="text-xs text-muted-foreground ml-auto">
-                      {new Date(h.createdAt).toLocaleString('ru-KZ')}
+                      {new Date(h.createdAt).toLocaleString()}
                     </span>
                   </div>
                   {h.comment && (
@@ -280,27 +282,30 @@ export const AdminOrderDetailPage = () => {
       <Dialog open={confirmModalOpen} onOpenChange={setConfirmModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Смена статуса</DialogTitle>
+            <DialogTitle>{t('orderDetail.modal.changeStatus')}</DialogTitle>
             <DialogDescription>
-              Вы уверены, что хотите изменить статус заказа с «{statusLabels[order.status]}» на «{statusLabels[confirmStatus]}»?
+              {t('orderDetail.modal.changeStatusDesc', {
+                from: t(`orders.status.${order.status}`),
+                to: t(`orders.status.${confirmStatus}`),
+              })}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
-            <Label htmlFor="comment">Комментарий (необязательно)</Label>
+            <Label htmlFor="comment">{t('orderDetail.modal.commentOptional')}</Label>
             <Textarea
               id="comment"
               value={confirmComment}
               onChange={(e) => setConfirmComment(e.target.value)}
-              placeholder="Причина смены статуса..."
+              placeholder={t('orderDetail.modal.reasonPlaceholder')}
             />
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setConfirmModalOpen(false)}>
-              Отмена
+              {t('orderDetail.modal.cancel')}
             </Button>
             <Button onClick={confirmStatusChange} disabled={updateStatus.isPending}>
               {updateStatus.isPending && <Loader2 className="h-4 w-4 mr-1 animate-spin" />}
-              Подтвердить
+              {t('orderDetail.modal.confirm')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -310,42 +315,42 @@ export const AdminOrderDetailPage = () => {
       <Dialog open={manualModalOpen} onOpenChange={setManualModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Ручная смена статуса</DialogTitle>
+            <DialogTitle>{t('orderDetail.modal.manualChangeTitle')}</DialogTitle>
             <DialogDescription>
-              Выбор любого статуса сбросит историю изменений.
+              {t('orderDetail.modal.manualChangeDesc')}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label>Статус</Label>
+              <Label>{t('orderDetail.modal.status')}</Label>
               <Select value={manualStatus} onValueChange={setManualStatus}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Выберите статус" />
+                  <SelectValue placeholder={t('orderDetail.modal.selectStatus')} />
                 </SelectTrigger>
                 <SelectContent>
                   {allStatuses
                     .filter((s) => s !== 'ARCHIVED' && s !== order.status)
                     .map((s) => (
                       <SelectItem key={s} value={s}>
-                        {statusLabels[s] || s}
+                        {t(`orders.status.${s}`) || s}
                       </SelectItem>
                     ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="manual-comment">Комментарий (необязательно)</Label>
+              <Label htmlFor="manual-comment">{t('orderDetail.modal.commentOptional')}</Label>
               <Textarea
                 id="manual-comment"
                 value={manualComment}
                 onChange={(e) => setManualComment(e.target.value)}
-                placeholder="Причина смены статуса..."
+                placeholder={t('orderDetail.modal.reasonPlaceholder')}
               />
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setManualModalOpen(false)}>
-              Отмена
+              {t('orderDetail.modal.cancel')}
             </Button>
             <Button
               onClick={confirmManualChange}
@@ -353,7 +358,7 @@ export const AdminOrderDetailPage = () => {
               variant="destructive"
             >
               {updateStatus.isPending && <Loader2 className="h-4 w-4 mr-1 animate-spin" />}
-              Сменить статус
+              {t('orderDetail.modal.changeStatusBtn')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -363,14 +368,14 @@ export const AdminOrderDetailPage = () => {
       <Dialog open={archiveModalOpen} onOpenChange={setArchiveModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Архивирование заказа</DialogTitle>
+            <DialogTitle>{t('orderDetail.modal.archiveTitle')}</DialogTitle>
             <DialogDescription>
-              Вы уверены, что хотите переместить заказ {order.orderNumber} в архив?
+              {t('orderDetail.modal.archiveDesc', { number: order.orderNumber })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setArchiveModalOpen(false)}>
-              Отмена
+              {t('orderDetail.modal.cancel')}
             </Button>
             <Button
               onClick={() => {
@@ -382,7 +387,7 @@ export const AdminOrderDetailPage = () => {
               variant="secondary"
             >
               {archiveOrder.isPending && <Loader2 className="h-4 w-4 mr-1 animate-spin" />}
-              В архив
+              {t('orderDetail.modal.archiveBtn')}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -20,20 +21,27 @@ import { useTentBrands } from '@/entities/tent-brand/model/use-tent-brands';
 import { useTentTypes } from '@/entities/tent-type/model/use-tent-types';
 import { useTentSeasons } from '@/entities/tent-season/model/use-tent-seasons';
 import { useCreateTent, useUpdateTent, useAdminTent } from '@/entities/tent/model/use-admin-tents';
+import { LanguageTabs } from '@/features/language-tabs/ui/LanguageTabs';
 import { api } from '@/shared/api';
 import { ROUTES } from '@/shared/config';
 import { Loader2 } from 'lucide-react';
 
 const schema = z.object({
-  name: z.string().min(1, 'Обязательно'),
-  tentBrandId: z.string().min(1, 'Обязательно'),
-  tentTypeDictId: z.string().min(1, 'Обязательно'),
-  tentSeasonId: z.string().min(1, 'Обязательно'),
-  capacity: z.coerce.number().min(1, 'Минимум 1'),
-  weight: z.coerce.number().min(0.1, 'Обязательно'),
-  dailyPrice: z.coerce.number().min(1, 'Обязательно'),
-  shortDescription: z.string().default(''),
-  description: z.string().default(''),
+  name_kk: z.string().min(1, 'required'),
+  name_ru: z.string().default(''),
+  name_en: z.string().default(''),
+  tentBrandId: z.string().min(1, 'required'),
+  tentTypeDictId: z.string().min(1, 'required'),
+  tentSeasonId: z.string().min(1, 'required'),
+  capacity: z.coerce.number().min(1, 'min1'),
+  weight: z.coerce.number().min(0.1, 'required'),
+  dailyPrice: z.coerce.number().min(1, 'required'),
+  shortDescription_kk: z.string().default(''),
+  shortDescription_ru: z.string().default(''),
+  shortDescription_en: z.string().default(''),
+  description_kk: z.string().default(''),
+  description_ru: z.string().default(''),
+  description_en: z.string().default(''),
   mainImage: z.string().default(''),
   isActive: z.boolean().default(true),
   unitsCount: z.coerce.number().min(0).default(0),
@@ -47,6 +55,7 @@ interface Props {
 }
 
 export const TentForm = ({ mode, tentId }: Props) => {
+  const { t } = useTranslation('admin');
   const navigate = useNavigate();
   const { data: brands } = useTentBrands();
   const { data: types } = useTentTypes();
@@ -83,15 +92,21 @@ export const TentForm = ({ mode, tentId }: Props) => {
   useEffect(() => {
     if (existing && mode === 'edit') {
       reset({
-        name: existing.name,
+        name_kk: existing.name_kk ?? existing.name ?? '',
+        name_ru: existing.name_ru ?? '',
+        name_en: existing.name_en ?? '',
         tentBrandId: existing.brand?.id ?? '',
         tentTypeDictId: existing.type?.id ?? '',
         tentSeasonId: existing.season?.id ?? '',
         capacity: existing.capacity,
         weight: existing.weight,
         dailyPrice: existing.dailyPrice,
-        shortDescription: existing.shortDescription,
-        description: existing.description,
+        shortDescription_kk: existing.shortDescription_kk ?? existing.shortDescription ?? '',
+        shortDescription_ru: existing.shortDescription_ru ?? '',
+        shortDescription_en: existing.shortDescription_en ?? '',
+        description_kk: existing.description_kk ?? existing.description ?? '',
+        description_ru: existing.description_ru ?? '',
+        description_en: existing.description_en ?? '',
         mainImage: existing.mainImage,
         isActive: existing.isActive,
         unitsCount: 0,
@@ -110,7 +125,7 @@ export const TentForm = ({ mode, tentId }: Props) => {
         await Promise.all(
           Array.from({ length: data.unitsCount }).map((_, i) =>
             api.post(`/admin/tents/${tent.id}/units`, {
-              inventoryCode: `${tent.name.slice(0, 5).toUpperCase()}-${String(i + 1).padStart(3, '0')}`,
+              inventoryCode: `${(tent.name || data.name_kk).slice(0, 5).toUpperCase()}-${String(i + 1).padStart(3, '0')}`,
               status: 'AVAILABLE',
             })
           )
@@ -124,27 +139,56 @@ export const TentForm = ({ mode, tentId }: Props) => {
 
   const isPending = create.isPending || update.isPending;
 
+  const nameField = (lang: string) => (
+    <div className="space-y-2" key={`name-${lang}`}>
+      <Label htmlFor={`name_${lang}`}>{t('tentForm.name')} ({lang.toUpperCase()}) {lang === 'kk' && '*'}</Label>
+      <Input id={`name_${lang}`} {...register(`name_${lang}` as keyof FormData)} />
+      {errors[`name_${lang}` as keyof FormData] && (
+        <p className="text-xs text-destructive">{(errors[`name_${lang}` as keyof FormData] as any)?.message}</p>
+      )}
+    </div>
+  );
+
+  const shortDescField = (lang: string) => (
+    <div className="space-y-2" key={`short-${lang}`}>
+      <Label htmlFor={`shortDescription_${lang}`}>{t('tentForm.shortDescription')} ({lang.toUpperCase()})</Label>
+      <Input id={`shortDescription_${lang}`} {...register(`shortDescription_${lang}` as keyof FormData)} />
+    </div>
+  );
+
+  const descField = (lang: string) => (
+    <div className="space-y-2" key={`desc-${lang}`}>
+      <Label htmlFor={`description_${lang}`}>{t('tentForm.fullDescription')} ({lang.toUpperCase()})</Label>
+      <textarea
+        id={`description_${lang}`}
+        {...register(`description_${lang}` as keyof FormData)}
+        rows={4}
+        className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+      />
+    </div>
+  );
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-3xl px-4 py-8 md:px-6 space-y-6">
       <h2 className="text-3xl font-bold tracking-tight">
-        {mode === 'create' ? 'Новая палатка' : 'Редактировать палатку'}
+        {mode === 'create' ? t('tentForm.createTitle') : t('tentForm.editTitle')}
       </h2>
 
       <Card>
         <CardHeader>
-          <CardTitle>Основное</CardTitle>
+          <CardTitle>{t('tentForm.basic')}</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="name">Название</Label>
-            <Input id="name" {...register('name')} />
-            {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+          <div className="sm:col-span-2">
+            <LanguageTabs>
+              {{ kk: nameField('kk'), ru: nameField('ru'), en: nameField('en') }}
+            </LanguageTabs>
           </div>
           <div className="space-y-2">
-            <Label>Бренд</Label>
+            <Label>{t('tentForm.brand')}</Label>
             <Select value={tentBrandId} onValueChange={(v) => setValue('tentBrandId', v)}>
               <SelectTrigger>
-                <SelectValue placeholder="Выберите бренд" />
+                <SelectValue placeholder={t('tentForm.selectBrand')} />
               </SelectTrigger>
               <SelectContent>
                 {brands?.map((b) => (
@@ -155,10 +199,10 @@ export const TentForm = ({ mode, tentId }: Props) => {
             {errors.tentBrandId && <p className="text-xs text-destructive">{errors.tentBrandId.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label>Тип</Label>
+            <Label>{t('tentForm.type')}</Label>
             <Select value={tentTypeDictId} onValueChange={(v) => setValue('tentTypeDictId', v)}>
               <SelectTrigger>
-                <SelectValue placeholder="Выберите тип" />
+                <SelectValue placeholder={t('tentForm.selectType')} />
               </SelectTrigger>
               <SelectContent>
                 {types?.map((t) => (
@@ -169,10 +213,10 @@ export const TentForm = ({ mode, tentId }: Props) => {
             {errors.tentTypeDictId && <p className="text-xs text-destructive">{errors.tentTypeDictId.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label>Сезон</Label>
+            <Label>{t('tentForm.season')}</Label>
             <Select value={tentSeasonId} onValueChange={(v) => setValue('tentSeasonId', v)}>
               <SelectTrigger>
-                <SelectValue placeholder="Выберите сезон" />
+                <SelectValue placeholder={t('tentForm.selectSeason')} />
               </SelectTrigger>
               <SelectContent>
                 {seasons?.map((s) => (
@@ -183,20 +227,20 @@ export const TentForm = ({ mode, tentId }: Props) => {
             {errors.tentSeasonId && <p className="text-xs text-destructive">{errors.tentSeasonId.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="capacity">Вместимость</Label>
+            <Label htmlFor="capacity">{t('tentForm.capacity')}</Label>
             <Input id="capacity" type="number" {...register('capacity')} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="weight">Вес (кг)</Label>
+            <Label htmlFor="weight">{t('tentForm.weight')}</Label>
             <Input id="weight" type="number" step="0.1" {...register('weight')} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="dailyPrice">Цена за сутки (₸)</Label>
+            <Label htmlFor="dailyPrice">{t('tentForm.dailyPrice')}</Label>
             <Input id="dailyPrice" type="number" {...register('dailyPrice')} />
           </div>
           {mode === 'create' && (
             <div className="space-y-2">
-              <Label htmlFor="unitsCount">Количество единиц на складе</Label>
+              <Label htmlFor="unitsCount">{t('tentForm.unitsCount')}</Label>
               <Input id="unitsCount" type="number" {...register('unitsCount')} />
             </div>
           )}
@@ -205,37 +249,30 @@ export const TentForm = ({ mode, tentId }: Props) => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Описание</CardTitle>
+          <CardTitle>{t('tentForm.description')}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="shortDescription">Краткое описание</Label>
-            <Input id="shortDescription" {...register('shortDescription')} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="description">Полное описание</Label>
-            <textarea
-              id="description"
-              {...register('description')}
-              rows={4}
-              className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            />
-          </div>
+        <CardContent className="space-y-6">
+          <LanguageTabs>
+            {{ kk: shortDescField('kk'), ru: shortDescField('ru'), en: shortDescField('en') }}
+          </LanguageTabs>
+          <LanguageTabs>
+            {{ kk: descField('kk'), ru: descField('ru'), en: descField('en') }}
+          </LanguageTabs>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Изображения</CardTitle>
+          <CardTitle>{t('tentForm.images')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <Label>Главное изображение</Label>
+            <Label>{t('tentForm.mainImage')}</Label>
             <ImageUpload value={mainImage} onChange={(url) => setValue('mainImage', url)} />
           </div>
 
           <div className="space-y-3">
-            <Label>Дополнительные фотографии</Label>
+            <Label>{t('tentForm.additionalImages')}</Label>
             <div className="flex flex-wrap gap-3">
               {images.map((img, i) => (
                 <div key={i} className="relative h-20 w-20 overflow-hidden rounded-lg border">
@@ -263,7 +300,7 @@ export const TentForm = ({ mode, tentId }: Props) => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Настройки</CardTitle>
+          <CardTitle>{t('tentForm.settings')}</CardTitle>
         </CardHeader>
         <CardContent>
           <label className="flex items-center gap-2 text-sm">
@@ -271,7 +308,7 @@ export const TentForm = ({ mode, tentId }: Props) => {
               checked={isActive}
               onCheckedChange={(checked) => setValue('isActive', !!checked)}
             />
-            Активна (отображается в каталоге)
+            {t('tentForm.isActive')}
           </label>
         </CardContent>
       </Card>
@@ -279,10 +316,10 @@ export const TentForm = ({ mode, tentId }: Props) => {
       <div className="flex gap-3">
         <Button type="submit" disabled={isPending}>
           {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {mode === 'create' ? 'Создать' : 'Сохранить'}
+          {mode === 'create' ? t('tentForm.create') : t('tentForm.save')}
         </Button>
         <Button type="button" variant="outline" onClick={() => navigate(ROUTES.ADMIN_INVENTORY_TENTS)}>
-          Отмена
+          {t('tentForm.cancel')}
         </Button>
       </div>
     </form>

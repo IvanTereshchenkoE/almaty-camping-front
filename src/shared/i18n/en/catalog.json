@@ -1,0 +1,71 @@
+{
+  "pageTitle": "Tent Catalog",
+  "pageSubtitle": "Select dates and find a tent for your plans",
+  "sort": {
+    "label": "Sort by:",
+    "availability": "Available first",
+    "priceAsc": "Cheapest first",
+    "priceDesc": "Most expensive first",
+    "capacity": "By capacity",
+    "weight": "By weight"
+  },
+  "found": "Found: {{count}} tents",
+  "filters": "Filters",
+  "reset": "Reset",
+  "resetAll": "Reset all",
+  "showResults": "Show {{count}} tents",
+  "error": "Failed to load tents",
+  "retry": "Retry",
+  "noResults": "No tents found",
+  "noResultsHint": "Try changing dates or resetting filters",
+  "pagination": {
+    "prev": "Previous",
+    "next": "Next"
+  },
+  "card": {
+    "outOfStock": "Out of stock",
+    "inStock": "In stock",
+    "people": "people",
+    "kg": "kg",
+    "noDescription": "No description",
+    "available": "Available: {{available}} of {{total}}",
+    "pricePerDay": "{{price}} ₸/day",
+    "select": "Select",
+    "unavailable": "Unavailable"
+  },
+  "detail": {
+    "description": "Description",
+    "characteristics": "Characteristics",
+    "type": "Construction type",
+    "season": "Season",
+    "weight": "Weight",
+    "capacity": "Capacity",
+    "close": "Close",
+    "totalFor": "Total for {{days}} {{unit}}",
+    "chooseDates": "Select rental dates"
+  },
+  "filtersPanel": {
+    "title": "Filters",
+    "price": "Price",
+    "capacity": "Capacity",
+    "season": "Season",
+    "type": "Construction type",
+    "maxWeight": "Max weight",
+    "brand": "Brand",
+    "from": "from",
+    "to": "to",
+    "person_one": "person",
+    "person_other": "people"
+  },
+  "datePanel": {
+    "title": "Rental dates",
+    "subtitle": "Select a period to check availability",
+    "days": "Days:"
+  },
+  "dateRange": {
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "week": "For a week",
+    "weekend": "For the weekend"
+  }
+}

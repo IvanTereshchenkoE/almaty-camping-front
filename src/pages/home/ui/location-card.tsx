@@ -2,6 +2,7 @@ import { MapPin, Mountain, ArrowRight, Pencil } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { cn } from '@/shared/lib/cn';
 import type { Location } from '@/shared/types';
+import { useTranslation } from 'react-i18next';
 
 interface LocationCardProps {
   location: Location;
@@ -12,6 +13,7 @@ interface LocationCardProps {
 }
 
 export function LocationCard({ location, onClick, onEdit, index, isVisible }: LocationCardProps) {
+  const { t } = useTranslation('home');
   const hasImage = !!location.imageUrl;
 
   return (
@@ -27,7 +29,6 @@ export function LocationCard({ location, onClick, onEdit, index, isVisible }: Lo
       )}
       style={{ transitionDelay: `${index * 100}ms` }}
     >
-      {/* Image area — unified aspect ratio, overflow hidden */}
       <div className="relative aspect-[4/3] overflow-hidden">
         {hasImage ? (
           <img
@@ -38,11 +39,8 @@ export function LocationCard({ location, onClick, onEdit, index, isVisible }: Lo
           />
         ) : (
           <div className="relative h-full w-full overflow-hidden bg-gradient-to-br from-emerald-100 via-stone-100 to-emerald-200">
-            {/* Decorative radial gradient */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.7),transparent_35%)]" />
-            {/* Decorative icon */}
             <Mountain className="absolute right-6 top-6 h-10 w-10 text-emerald-700/20" strokeWidth={1.2} />
-            {/* Large faint text */}
             <div className="absolute inset-0 flex items-center justify-center">
               <span className="text-5xl font-bold tracking-tight text-emerald-950/20">
                 {location.region.slice(0, 3)}
@@ -51,15 +49,13 @@ export function LocationCard({ location, onClick, onEdit, index, isVisible }: Lo
           </div>
         )}
 
-        {/* Distance badge — stays still on hover */}
         <div className="absolute left-4 top-4 z-10">
           <Badge className="rounded-full bg-white/90 text-slate-700 backdrop-blur-sm border-0 shadow-sm">
             <MapPin className="mr-1 h-3 w-3 text-emerald-600" />
-            {location.distanceFromAlmatyKm} км
+            {t('locations.card.kmFromAlmaty', { distance: location.distanceFromAlmatyKm })}
           </Badge>
         </div>
 
-        {/* Admin edit button */}
         {onEdit && (
           <div
             className="absolute right-4 top-4 z-20 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
@@ -75,7 +71,6 @@ export function LocationCard({ location, onClick, onEdit, index, isVisible }: Lo
         )}
       </div>
 
-      {/* Content */}
       <div className="p-6">
         <h3 className="text-lg font-semibold tracking-tight text-slate-900 mb-1 transition-colors group-hover:text-emerald-800">
           {location.name}
@@ -91,13 +86,13 @@ export function LocationCard({ location, onClick, onEdit, index, isVisible }: Lo
             ))}
             {Array.isArray(location.features) && location.features.length > 2 && (
               <Badge variant="secondary" className="bg-slate-100 text-slate-500 font-normal">
-                +{location.features.length - 2}
+                {t('locations.card.featuresMore', { count: location.features.length - 2 })}
               </Badge>
             )}
           </div>
 
           <span className="inline-flex items-center text-xs font-medium text-emerald-700 opacity-0 transition-all group-hover:opacity-100 translate-x-0 group-hover:translate-x-1">
-            Подробнее
+            {t('locations.card.details')}
             <ArrowRight className="ml-1 h-3.5 w-3.5" />
           </span>
         </div>

@@ -28,6 +28,9 @@ export interface TentUnit {
 export interface Tent {
   id: string;
   name: string;
+  name_kk?: string;
+  name_ru?: string;
+  name_en?: string;
   brand?: TentBrand | null;
   type?: TentTypeDict | null;
   season?: TentSeason | null;
@@ -35,7 +38,13 @@ export interface Tent {
   weight: number;
   dailyPrice: number;
   description: string;
+  description_kk?: string;
+  description_ru?: string;
+  description_en?: string;
   shortDescription?: string;
+  shortDescription_kk?: string;
+  shortDescription_ru?: string;
+  shortDescription_en?: string;
   mainImage: string;
   images: string[];
   isActive: boolean;

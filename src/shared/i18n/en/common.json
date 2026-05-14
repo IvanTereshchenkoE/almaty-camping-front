@@ -1,0 +1,59 @@
+{
+  "nav": {
+    "home": "Home",
+    "catalog": "Tent Catalog",
+    "myOrders": "My Orders",
+    "admin": {
+      "title": "Admin",
+      "orders": "Orders",
+      "inventory": "Inventory",
+      "analytics": "Analytics",
+      "settings": "Dictionaries"
+    },
+    "logout": "Logout",
+    "login": "Admin Login",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "footer": {
+    "brandDesc": "Tent rental and sales for camping in Almaty and region. Simple, convenient, with delivery.",
+    "navigation": "Navigation",
+    "contacts": "Contacts",
+    "address": "Almaty, Kazakhstan",
+    "workHoursWeek": "Mon–Fri: 09:00 – 20:00",
+    "workHoursWeekend": "Sat–Sun: 10:00 – 18:00",
+    "copyright": "© {{year}} Almaty Camping. All rights reserved.",
+    "madeWithLove": "Made with love for the mountains"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "continue": "Continue",
+    "view": "View",
+    "select": "Select",
+    "details": "Details"
+  },
+  "status": {
+    "available": "In stock",
+    "outOfStock": "Out of stock",
+    "unavailable": "Unavailable",
+    "active": "Active",
+    "archive": "Archive"
+  },
+  "units": {
+    "km": "km",
+    "kg": "kg",
+    "day_one": "day",
+    "day_other": "days",
+    "person_one": "person",
+    "person_other": "people"
+  }
+}

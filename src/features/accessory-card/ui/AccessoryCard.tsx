@@ -3,6 +3,7 @@ import { Plus, Minus, Package } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { API_BASE_URL } from '@/shared/api';
 import { cn } from '@/shared/lib/cn';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   name: string;
@@ -27,6 +28,7 @@ export const AccessoryCard = ({
   onIncrement,
   onDecrement,
 }: Props) => {
+  const { t } = useTranslation('catalog');
   const [added, setAdded] = useState(quantity > 0);
   const isUnavailable = availableQuantity <= 0;
 
@@ -60,7 +62,6 @@ export const AccessoryCard = ({
         isUnavailable && 'opacity-60'
       )}
     >
-      {/* Image */}
       <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-stone-100">
         {resolvedImage ? (
           <img
@@ -74,15 +75,13 @@ export const AccessoryCard = ({
         )}
       </div>
 
-      {/* Info */}
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-slate-900 truncate">{name}</p>
         <p className="text-xs text-slate-500 mt-0.5">
-          {dailyPrice.toLocaleString()} ₸/сут · Доступно: {availableQuantity} из {totalQuantity}
+          {dailyPrice.toLocaleString()} ₸/{t('card.people')} · {t('card.available', { available: availableQuantity, total: totalQuantity })}
         </p>
       </div>
 
-      {/* Actions */}
       <div className="shrink-0">
         {!added || quantity === 0 ? (
           <Button
@@ -93,7 +92,7 @@ export const AccessoryCard = ({
             className="h-9 rounded-xl border-emerald-900/10 text-xs font-medium hover:bg-emerald-50 hover:text-emerald-700"
           >
             <Plus className="mr-1 h-3.5 w-3.5" />
-            Добавить
+            {t('card.select')}
           </Button>
         ) : (
           <div className="flex items-center gap-2">

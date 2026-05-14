@@ -1,0 +1,61 @@
+{
+  "nav": {
+    "home": "Главная",
+    "catalog": "Каталог палаток",
+    "myOrders": "Мои заказы",
+    "admin": {
+      "title": "Админ",
+      "orders": "Заказы",
+      "inventory": "Склад",
+      "analytics": "Аналитика",
+      "settings": "Справочники"
+    },
+    "logout": "Выйти",
+    "login": "Вход для админа",
+    "openMenu": "Открыть меню",
+    "closeMenu": "Закрыть меню"
+  },
+  "footer": {
+    "brandDesc": "Аренда и продажа палаток для кемпинга в Алматы и области. Просто, удобно, с доставкой.",
+    "navigation": "Навигация",
+    "contacts": "Контакты",
+    "address": "г. Алматы, Казахстан",
+    "workHoursWeek": "Пн–Пт: 09:00 – 20:00",
+    "workHoursWeekend": "Сб–Вс: 10:00 – 18:00",
+    "copyright": "© {{year}} Almaty Camping. Все права защищены.",
+    "madeWithLove": "Сделано с любовью к горам"
+  },
+  "actions": {
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "delete": "Удалить",
+    "edit": "Редактировать",
+    "add": "Добавить",
+    "search": "Поиск",
+    "close": "Закрыть",
+    "back": "Назад",
+    "next": "Далее",
+    "submit": "Отправить",
+    "continue": "Продолжить",
+    "view": "Посмотреть",
+    "select": "Выбрать",
+    "details": "Подробнее"
+  },
+  "status": {
+    "available": "В наличии",
+    "outOfStock": "Нет в наличии",
+    "unavailable": "Недоступно",
+    "active": "Активные",
+    "archive": "Архив"
+  },
+  "units": {
+    "km": "км",
+    "kg": "кг",
+    "day_one": "сутки",
+    "day_few": "суток",
+    "day_many": "суток",
+    "person_one": "человек",
+    "person_few": "человека",
+    "person_many": "человек"
+  }
+}

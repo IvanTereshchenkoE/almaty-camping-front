@@ -1,6 +1,7 @@
 import * as React from "react";
 import { format, addDays, startOfDay } from "date-fns";
-import { ru } from "date-fns/locale";
+import { ru, kk, enUS } from "date-fns/locale";
+import type { Locale } from "date-fns";
 import { DayPicker } from "react-day-picker";
 import type { DateRange } from "react-day-picker";
 import "react-day-picker/dist/style.css";
@@ -8,6 +9,7 @@ import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-reac
 import { cn } from "@/shared/lib/cn";
 import { Button } from "@/shared/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/popover";
+import { useTranslation } from "react-i18next";
 
 interface DateRangePickerProps {
   startDate: string;
@@ -15,6 +17,12 @@ interface DateRangePickerProps {
   onChange: (start: string, end: string) => void;
   className?: string;
 }
+
+const dateFnsLocales: Record<string, Locale> = {
+  ru,
+  kk,
+  en: enUS,
+};
 
 function toDate(str: string): Date | undefined {
   if (!str) return undefined;
@@ -28,7 +36,9 @@ function toString(date: Date | undefined): string {
 }
 
 export const DateRangePicker = ({ startDate, endDate, onChange, className }: DateRangePickerProps) => {
+  const { t, i18n } = useTranslation('catalog');
   const [open, setOpen] = React.useState(false);
+  const locale = dateFnsLocales[i18n.language] || ru;
 
   const selected: DateRange | undefined = React.useMemo(() => {
     const from = toDate(startDate);
@@ -55,10 +65,10 @@ export const DateRangePicker = ({ startDate, endDate, onChange, className }: Dat
   }, [startDate, endDate]);
 
   const quickActions = [
-    { label: "Сегодня", action: () => { const t = startOfDay(new Date()); onChange(toString(t), toString(t)); setOpen(false); } },
-    { label: "Завтра", action: () => { const t = startOfDay(addDays(new Date(), 1)); onChange(toString(t), toString(t)); setOpen(false); } },
-    { label: "На неделю", action: () => { const t = startOfDay(new Date()); onChange(toString(t), toString(addDays(t, 6))); setOpen(false); } },
-    { label: "На выходные", action: () => { const t = startOfDay(new Date()); const sat = addDays(t, (6 - t.getDay() + 7) % 7); onChange(toString(sat), toString(addDays(sat, 1))); setOpen(false); } },
+    { label: t('dateRange.today', 'Сегодня'), action: () => { const t = startOfDay(new Date()); onChange(toString(t), toString(t)); setOpen(false); } },
+    { label: t('dateRange.tomorrow', 'Завтра'), action: () => { const t = startOfDay(addDays(new Date(), 1)); onChange(toString(t), toString(t)); setOpen(false); } },
+    { label: t('dateRange.week', 'На неделю'), action: () => { const t = startOfDay(new Date()); onChange(toString(t), toString(addDays(t, 6))); setOpen(false); } },
+    { label: t('dateRange.weekend', 'На выходные'), action: () => { const t = startOfDay(new Date()); const sat = addDays(t, (6 - t.getDay() + 7) % 7); onChange(toString(sat), toString(addDays(sat, 1))); setOpen(false); } },
   ];
 
   return (
@@ -69,10 +79,10 @@ export const DateRangePicker = ({ startDate, endDate, onChange, className }: Dat
             <CalendarIcon className="mr-2 h-4 w-4" />
             {startDate && endDate ? (
               <span>
-                {format(toDate(startDate)!, "d MMM", { locale: ru })} — {format(toDate(endDate)!, "d MMM yyyy", { locale: ru })}
+                {format(toDate(startDate)!, "d MMM", { locale })} — {format(toDate(endDate)!, "d MMM yyyy", { locale })}
               </span>
             ) : (
-              <span className="text-muted-foreground">Выберите даты аренды</span>
+              <span className="text-muted-foreground">{t('datePanel.subtitle')}</span>
             )}
           </Button>
         </PopoverTrigger>
@@ -91,7 +101,7 @@ export const DateRangePicker = ({ startDate, endDate, onChange, className }: Dat
             selected={selected}
             onSelect={handleSelect}
             numberOfMonths={2}
-            locale={ru}
+            locale={locale}
             disabled={{ before: new Date() }}
             classNames={{
               months: "flex flex-col sm:flex-row gap-4",
@@ -125,7 +135,7 @@ export const DateRangePicker = ({ startDate, endDate, onChange, className }: Dat
       </Popover>
       {startDate && endDate && (
         <p className="text-sm text-muted-foreground pb-2">
-          Суток: <span className="font-medium">{daysCount}</span>
+          {t('datePanel.days')} <span className="font-medium">{daysCount}</span>
         </p>
       )}
     </div>

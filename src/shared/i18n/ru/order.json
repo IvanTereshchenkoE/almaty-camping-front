@@ -1,0 +1,76 @@
+{
+  "stepper": {
+    "equipment": "Комплектация",
+    "contacts": "Контакты",
+    "review": "Проверка",
+    "done": "Готово"
+  },
+  "orderPage": {
+    "accessoriesTitle": "Дополнительное оборудование",
+    "noAccessories": "Нет доступного оборудования на выбранные даты",
+    "total": "Итого",
+    "continue": "Продолжить"
+  },
+  "contactsPage": {
+    "title": "Контактные данные",
+    "subtitle": "Укажите данные, чтобы мы могли связаться с вами для подтверждения заказа",
+    "back": "Назад",
+    "next": "Далее"
+  },
+  "summaryPage": {
+    "title": "Проверьте данные",
+    "dates": "Даты",
+    "composition": "Состав заказа",
+    "contacts": "Контакты",
+    "phone": "Телефон",
+    "telegram": "Telegram",
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "comment": "Комментарий",
+    "back": "Назад",
+    "submit": "Отправить заказ",
+    "day_one": "сутки",
+    "day_few": "суток",
+    "day_many": "суток"
+  },
+  "successPage": {
+    "title": "Заявка отправлена",
+    "message": "Мы свяжемся с вами в ближайшее время для подтверждения деталей аренды.",
+    "orderNumber": "Номер заказа",
+    "total": "Итого",
+    "myOrders": "Мои заказы",
+    "home": "На главную"
+  },
+  "contactForm": {
+    "name": "Имя",
+    "namePlaceholder": "Как к вам обращаться",
+    "phone": "Телефон",
+    "phonePlaceholder": "+7 (___) ___-__-__",
+    "telegram": "Telegram",
+    "telegramPlaceholder": "@username",
+    "whatsapp": "WhatsApp",
+    "whatsappPlaceholder": "+7 (___) ___-__-__",
+    "email": "Email",
+    "emailPlaceholder": "email@example.com",
+    "comment": "Комментарий",
+    "commentPlaceholder": "Дополнительные пожелания",
+    "required": "Обязательное поле",
+    "invalidPhone": "Введите корректный номер телефона"
+  },
+  "summaryCard": {
+    "yourOrder": "Ваш заказ",
+    "rentalDays": "{{count}} {{unit}}",
+    "rentalTotal": "Итого за аренду",
+    "tent": "Палатка",
+    "accessories": "Дополнительно",
+    "total": "Итого",
+    "remove": "Удалить"
+  },
+  "stepper": {
+    "step": "Шаг",
+    "equipment": "Комплектация",
+    "contacts": "Контакты",
+    "review": "Проверка",
+    "done": "Готово"
+  }
+}

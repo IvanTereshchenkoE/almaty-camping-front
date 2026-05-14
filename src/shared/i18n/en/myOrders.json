@@ -1,0 +1,20 @@
+{
+  "title": "My Orders",
+  "empty": "You don't have any orders yet",
+  "goToCatalog": "Go to catalog",
+  "dates": "Dates",
+  "items": "Items",
+  "total": "Total",
+  "created": "Created",
+  "status": {
+    "NEW": "New request",
+    "VIEWED": "Viewed",
+    "CONFIRMED": "Confirmed",
+    "PREPAID": "Prepaid",
+    "ISSUED": "Issued to client",
+    "RETURNED": "Returned",
+    "COMPLETED": "Completed",
+    "CANCELLED": "Cancelled",
+    "DAMAGED": "Damaged"
+  }
+}

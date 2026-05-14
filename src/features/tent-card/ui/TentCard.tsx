@@ -8,6 +8,7 @@ import { ROUTES } from '@/shared/config';
 import { API_BASE_URL } from '@/shared/api';
 import { cn } from '@/shared/lib/cn';
 import { Tent as TentIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   tent: Tent & { totalQuantity?: number; availableQuantity?: number; isAvailable?: boolean };
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export const TentCard = ({ tent, onClick }: Props) => {
+  const { t } = useTranslation('catalog');
   const navigate = useNavigate();
   const { startDate, endDate, rentalDays, setTent } = useOrderStore();
   const { isAdmin } = useAuthStore();
@@ -54,7 +56,6 @@ export const TentCard = ({ tent, onClick }: Props) => {
         'cursor-pointer'
       )}
     >
-      {/* Image */}
       <div className="relative aspect-[16/10] overflow-hidden sm:aspect-[4/3]">
         {hasImage ? (
           <img
@@ -75,21 +76,19 @@ export const TentCard = ({ tent, onClick }: Props) => {
           </div>
         )}
 
-        {/* Status badge */}
         <div className="absolute left-4 top-4 z-10">
           {isUnavailable ? (
             <Badge className="rounded-full bg-stone-100 text-stone-500 border-0 shadow-sm">
-              Нет в наличии
+              {t('card.outOfStock')}
             </Badge>
           ) : (
             <Badge className="rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 shadow-sm">
-              В наличии
+              {t('card.inStock')}
             </Badge>
           )}
         </div>
       </div>
 
-      {/* Content */}
       <div className="flex flex-1 flex-col p-5">
         <h3 className="text-lg font-semibold tracking-tight text-slate-900 line-clamp-2 mb-1 group-hover:text-emerald-800 transition-colors">
           {tent.name}
@@ -98,7 +97,7 @@ export const TentCard = ({ tent, onClick }: Props) => {
 
         <div className="flex flex-wrap gap-1.5 mb-3">
           <Badge variant="secondary" className="rounded-full bg-stone-100 text-slate-600 border border-emerald-900/10 font-normal text-xs">
-            {tent.capacity} чел.
+            {tent.capacity} {t('card.people')}
           </Badge>
           <Badge variant="secondary" className="rounded-full bg-stone-100 text-slate-600 border border-emerald-900/10 font-normal text-xs">
             {tent.season?.name ?? '—'}
@@ -107,23 +106,23 @@ export const TentCard = ({ tent, onClick }: Props) => {
             {tent.type?.name ?? '—'}
           </Badge>
           <Badge variant="secondary" className="rounded-full bg-stone-100 text-slate-600 border border-emerald-900/10 font-normal text-xs">
-            {tent.weight} кг
+            {tent.weight} {t('card.kg')}
           </Badge>
         </div>
 
         <p className="text-sm text-slate-500 truncate mb-4">
-          {tent.shortDescription || tent.description || 'Нет описания'}
+          {tent.shortDescription || tent.description || t('card.noDescription')}
         </p>
 
         {tent.totalQuantity !== undefined && tent.availableQuantity !== undefined && (
           <p className="text-xs text-slate-400 mb-4">
-            Доступно: <span className="font-medium text-slate-600">{tent.availableQuantity}</span> из {tent.totalQuantity}
+            {t('card.available', { available: tent.availableQuantity, total: tent.totalQuantity })}
           </p>
         )}
 
         <div className="mt-auto flex items-center justify-between gap-3">
           <span className="text-xl font-bold text-slate-900 whitespace-nowrap">
-            {tent.dailyPrice != null ? `${tent.dailyPrice.toLocaleString()} ₸/сутки` : '—'}
+            {tent.dailyPrice != null ? t('card.pricePerDay', { price: tent.dailyPrice.toLocaleString() }) : '—'}
           </span>
           {!isAdmin && (
             <Button
@@ -133,7 +132,7 @@ export const TentCard = ({ tent, onClick }: Props) => {
               onClick={handleSelect}
               className="h-11 rounded-2xl px-5 whitespace-nowrap"
             >
-              {isUnavailable ? 'Недоступно' : 'Выбрать'}
+              {isUnavailable ? t('card.unavailable') : t('card.select')}
             </Button>
           )}
         </div>

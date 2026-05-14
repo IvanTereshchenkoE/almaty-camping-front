@@ -7,16 +7,10 @@ import { useTentBrands } from '@/entities/tent-brand/model/use-tent-brands';
 import { useTentTypes } from '@/entities/tent-type/model/use-tent-types';
 import { useTentSeasons } from '@/entities/tent-season/model/use-tent-seasons';
 import { Loader2 } from 'lucide-react';
-
-const CAPACITY_OPTIONS = [
-  { label: '1 человек', value: 1 },
-  { label: '2 человека', value: 2 },
-  { label: '3 человека', value: 3 },
-  { label: '4 человека', value: 4 },
-  { label: '5+ человек', value: 5 },
-];
+import { useTranslation } from 'react-i18next';
 
 export const TentFilters = () => {
+  const { t } = useTranslation('catalog');
   const {
     minPrice,
     maxPrice,
@@ -39,6 +33,14 @@ export const TentFilters = () => {
   const { data: types, isLoading: typesLoading } = useTentTypes();
   const { data: seasons, isLoading: seasonsLoading } = useTentSeasons();
 
+  const capacityOptions = [
+    { label: `1 ${t('filtersPanel.person_one')}`, value: 1 },
+    { label: `2 ${t('filtersPanel.person_few')}`, value: 2 },
+    { label: `3 ${t('filtersPanel.person_few')}`, value: 3 },
+    { label: `4 ${t('filtersPanel.person_few')}`, value: 4 },
+    { label: `5+ ${t('filtersPanel.person_many')}`, value: 5 },
+  ];
+
   const activeCount =
     (minPrice !== undefined ? 1 : 0) +
     (maxPrice !== undefined ? 1 : 0) +
@@ -52,7 +54,7 @@ export const TentFilters = () => {
     <div className="rounded-3xl border border-emerald-900/10 bg-white p-6 shadow-sm">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h3 className="text-base font-semibold text-slate-900">Фильтры</h3>
+          <h3 className="text-base font-semibold text-slate-900">{t('filtersPanel.title')}</h3>
           {activeCount > 0 && (
             <span className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-emerald-700 px-1.5 text-[10px] font-bold text-white">
               {activeCount}
@@ -64,18 +66,18 @@ export const TentFilters = () => {
             onClick={reset}
             className="text-xs font-medium text-emerald-700 hover:text-emerald-800 transition-colors"
           >
-            Сбросить
+            {t('reset')}
           </button>
         )}
       </div>
 
       <div className="space-y-1">
-        <FilterSection title="Цена, ₸">
+        <FilterSection title={`${t('filtersPanel.price')}, ₸`}>
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
               <Input
                 type="number"
-                placeholder="От"
+                placeholder={t('filtersPanel.from')}
                 value={minPrice ?? ''}
                 onChange={(e) => setMinPrice(e.target.value ? Number(e.target.value) : undefined)}
                 className="h-10 rounded-xl border-emerald-900/10 pr-8"
@@ -86,7 +88,7 @@ export const TentFilters = () => {
             <div className="relative flex-1">
               <Input
                 type="number"
-                placeholder="До"
+                placeholder={t('filtersPanel.to')}
                 value={maxPrice ?? ''}
                 onChange={(e) => setMaxPrice(e.target.value ? Number(e.target.value) : undefined)}
                 className="h-10 rounded-xl border-emerald-900/10 pr-8"
@@ -96,9 +98,9 @@ export const TentFilters = () => {
           </div>
         </FilterSection>
 
-        <FilterSection title="Вместимость">
+        <FilterSection title={t('filtersPanel.capacity')}>
           <div className="space-y-2">
-            {CAPACITY_OPTIONS.map((opt) => (
+            {capacityOptions.map((opt) => (
               <label
                 key={opt.value}
                 htmlFor={`cap-${opt.value}`}
@@ -115,7 +117,7 @@ export const TentFilters = () => {
           </div>
         </FilterSection>
 
-        <FilterSection title="Сезон">
+        <FilterSection title={t('filtersPanel.season')}>
           {seasonsLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
@@ -138,7 +140,7 @@ export const TentFilters = () => {
           )}
         </FilterSection>
 
-        <FilterSection title="Тип конструкции">
+        <FilterSection title={t('filtersPanel.type')}>
           {typesLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
@@ -161,21 +163,21 @@ export const TentFilters = () => {
           )}
         </FilterSection>
 
-        <FilterSection title="Макс. вес, кг">
+        <FilterSection title={`${t('filtersPanel.maxWeight')}, ${t('card.kg')}`}>
           <div className="relative">
             <Input
               type="number"
               step="0.1"
-              placeholder="Например, 5"
+              placeholder={t('filtersPanel.to')}
               value={maxWeight ?? ''}
               onChange={(e) => setMaxWeight(e.target.value ? Number(e.target.value) : undefined)}
               className="h-10 rounded-xl border-emerald-900/10 pr-10"
             />
-            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">кг</span>
+            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">{t('card.kg')}</span>
           </div>
         </FilterSection>
 
-        <FilterSection title="Бренд">
+        <FilterSection title={t('filtersPanel.brand')}>
           {brandsLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
@@ -200,7 +202,7 @@ export const TentFilters = () => {
       </div>
 
       <Button variant="outline" className="mt-5 w-full rounded-2xl border-emerald-900/10" onClick={reset}>
-        Сбросить фильтры
+        {t('resetAll')}
       </Button>
     </div>
   );

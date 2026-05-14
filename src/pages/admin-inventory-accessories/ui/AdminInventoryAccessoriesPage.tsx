@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAdminAccessories, useDeleteAccessory } from '@/entities/accessory/model/use-admin-accessories';
 import { useAccessoryCategories } from '@/entities/accessory-category/model/use-accessory-categories';
 import { Button } from '@/shared/ui/button';
@@ -14,6 +15,7 @@ import { API_BASE_URL } from '@/shared/api';
 const FALLBACK_IMAGE = 'https://placehold.co/400x300?text=No+Image';
 
 export const AdminInventoryAccessoriesPage = () => {
+  const { t } = useTranslation('admin');
   const [search, setSearch] = useState('');
   const { data: accessories, isLoading } = useAdminAccessories();
   const { data: categories } = useAccessoryCategories();
@@ -31,18 +33,18 @@ export const AdminInventoryAccessoriesPage = () => {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 md:px-6">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <h2 className="text-3xl font-bold tracking-tight">Склад</h2>
+        <h2 className="text-3xl font-bold tracking-tight">{t('inventory.title')}</h2>
         <div className="flex gap-2">
           <Link to={`${ROUTES.ADMIN_INVENTORY_ACCESSORIES}/categories`}>
             <Button size="sm" variant="outline">
               <Tag className="h-4 w-4 mr-1" />
-              Категории
+              {t('inventory.dictionaries')}
             </Button>
           </Link>
           <Link to={`${ROUTES.ADMIN_INVENTORY_ACCESSORIES}/create`}>
             <Button size="sm">
               <Plus className="h-4 w-4 mr-1" />
-              Добавить периферию
+              {t('inventory.addAccessory')}
             </Button>
           </Link>
         </div>
@@ -59,7 +61,7 @@ export const AdminInventoryAccessoriesPage = () => {
           )}
         >
           <Tent className="h-4 w-4" />
-          Палатки
+          {t('inventory.tentsTab')}
         </Link>
         <Link
           to={ROUTES.ADMIN_INVENTORY_ACCESSORIES}
@@ -71,13 +73,13 @@ export const AdminInventoryAccessoriesPage = () => {
           )}
         >
           <Package className="h-4 w-4" />
-          Периферия
+          {t('inventory.accessoriesTab')}
         </Link>
       </div>
 
       <div className="mb-6">
         <Input
-          placeholder="Поиск по названию или категории..."
+          placeholder={t('inventory.searchAccessories')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="max-w-md"
@@ -91,7 +93,7 @@ export const AdminInventoryAccessoriesPage = () => {
       ) : filtered && filtered.length === 0 ? (
         <div className="text-center py-24 text-muted-foreground">
           <PackageOpen className="h-12 w-12 mx-auto mb-4" />
-          <p>Периферия не найдена</p>
+          <p>{t('inventory.accessoriesNotFound')}</p>
         </div>
       ) : (
         <div className="grid gap-4">
@@ -113,26 +115,26 @@ export const AdminInventoryAccessoriesPage = () => {
                       <div>
                         <h3 className="font-semibold text-base">{acc.name}</h3>
                         <p className="text-sm text-muted-foreground">
-                          {categoryMap.get(acc.categoryId) || 'Без категории'}
+                          {categoryMap.get(acc.categoryId) || t('inventory.noCategory')}
                         </p>
                       </div>
                       <Badge variant={acc.isActive ? 'default' : 'secondary'}>
-                        {acc.isActive ? 'Активна' : 'Неактивна'}
+                        {acc.isActive ? t('inventory.active') : t('inventory.inactive')}
                       </Badge>
                     </div>
                     <div className="text-sm space-y-1 mb-4">
-                      <p><span className="text-muted-foreground">Цена:</span> {acc.dailyPrice.toLocaleString()} ₸/сутки</p>
-                      <p><span className="text-muted-foreground">Единиц:</span> {acc.units.length}</p>
+                      <p><span className="text-muted-foreground">{t('inventory.price')}</span> {acc.dailyPrice.toLocaleString()} ₸/сутки</p>
+                      <p><span className="text-muted-foreground">{t('inventory.units')}</span> {acc.units.length}</p>
                     </div>
                     <div className="flex gap-2">
                       <Link to={`${ROUTES.ADMIN_INVENTORY_ACCESSORIES}/${acc.id}/edit`}>
-                        <Button size="sm" variant="outline">Редактировать</Button>
+                        <Button size="sm" variant="outline">{t('inventory.edit')}</Button>
                       </Link>
                       <Button
                         size="sm"
                         variant="destructive"
                         onClick={() => {
-                          if (confirm('Удалить периферию?')) deleteAccessory.mutate(acc.id);
+                          if (confirm(t('inventory.deleteAccessoryConfirm'))) deleteAccessory.mutate(acc.id);
                         }}
                         disabled={deleteAccessory.isPending}
                       >

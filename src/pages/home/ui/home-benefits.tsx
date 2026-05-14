@@ -1,32 +1,16 @@
 import { useRevealOnScroll } from '@/shared/lib/use-reveal-on-scroll';
 import { MapPin, Truck, ShieldCheck, HeartHandshake } from 'lucide-react';
 import { cn } from '@/shared/lib/cn';
+import { useTranslation } from 'react-i18next';
 
-const BENEFITS = [
-  {
-    icon: MapPin,
-    title: 'Близко к городу',
-    desc: 'Все локации в радиусе 450 км от Алматы — от Кольсай до Алтын-Эмеля.',
-  },
-  {
-    icon: Truck,
-    title: 'Доставка',
-    desc: 'Привезём палатку к месту старта или заберём оттуда после похода.',
-  },
-  {
-    icon: ShieldCheck,
-    title: 'Простая аренда',
-    desc: 'Без залога и лишних документов. Онлайн-бронирование за пару минут.',
-  },
-  {
-    icon: HeartHandshake,
-    title: 'Для всех',
-    desc: 'От новичков до опытных. Подберём палатку под ваш уровень и сезон.',
-  },
-];
+const BENEFIT_ICONS = [MapPin, Truck, ShieldCheck, HeartHandshake];
+const BENEFIT_KEYS = ['nearCity', 'delivery', 'simple', 'forAll'];
 
-function BenefitCard({ item, index }: { item: typeof BENEFITS[0]; index: number }) {
+function BenefitCard({ keyName, index }: { keyName: string; index: number }) {
+  const { t } = useTranslation('home');
   const { ref, isVisible } = useRevealOnScroll<HTMLDivElement>();
+  const Icon = BENEFIT_ICONS[index];
+
   return (
     <div
       ref={ref}
@@ -38,18 +22,21 @@ function BenefitCard({ item, index }: { item: typeof BENEFITS[0]; index: number 
     >
       <div className="mb-3 flex items-center gap-3">
         <div className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 transition-colors group-hover:bg-emerald-100">
-          <item.icon className="h-6 w-6" strokeWidth={1.8} />
+          <Icon className="h-6 w-6" strokeWidth={1.8} />
         </div>
         <h3 className="text-lg font-semibold tracking-tight text-slate-900">
-          {item.title}
+          {t(`benefits.cards.${keyName}.title`)}
         </h3>
       </div>
-      <p className="text-sm leading-relaxed text-slate-500">{item.desc}</p>
+      <p className="text-sm leading-relaxed text-slate-500">
+        {t(`benefits.cards.${keyName}.desc`)}
+      </p>
     </div>
   );
 }
 
 export function HomeBenefits() {
+  const { t } = useTranslation('home');
   const { ref: titleRef, isVisible: titleVisible } = useRevealOnScroll<HTMLDivElement>();
 
   return (
@@ -63,15 +50,15 @@ export function HomeBenefits() {
           )}
         >
           <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
-            Почему выбирают нас
+            {t('benefits.title')}
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-slate-500">
-            Мы сами ходим в походы и знаем, что важно — надёжное снаряжение, честные цены и никакой бюрократии.
+            {t('benefits.subtitle')}
           </p>
         </div>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {BENEFITS.map((item, i) => (
-            <BenefitCard key={item.title} item={item} index={i} />
+          {BENEFIT_KEYS.map((key, i) => (
+            <BenefitCard key={key} keyName={key} index={i} />
           ))}
         </div>
       </div>

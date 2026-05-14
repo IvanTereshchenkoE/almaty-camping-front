@@ -11,8 +11,10 @@ import { LocationDetailDialog } from './location-detail-dialog';
 import { LocationForm } from '@/features/location-form/ui/LocationForm';
 import { useDeleteLocation } from '@/entities/location/model';
 import type { Location } from '@/shared/types';
+import { useTranslation } from 'react-i18next';
 
 export function HomeLocations() {
+  const { t } = useTranslation('home');
   const { data: locations, isLoading } = useLocations();
   const { isAdmin } = useAuthStore();
   const deleteLocation = useDeleteLocation();
@@ -41,7 +43,7 @@ export function HomeLocations() {
 
   const handleDelete = async () => {
     if (!editingId) return;
-    if (confirm('Удалить эту локацию?')) {
+    if (confirm(t('locations.deleteConfirm'))) {
       await deleteLocation.mutateAsync(editingId);
       handleCloseForm();
     }
@@ -58,10 +60,10 @@ export function HomeLocations() {
           )}
         >
           <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
-            Популярные места для кемпинга
+            {t('locations.title')}
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-slate-500">
-            От горных озёр до степных каньонов — выбирай локацию под свои планы.
+            {t('locations.subtitle')}
           </p>
         </div>
 
@@ -100,7 +102,7 @@ export function HomeLocations() {
                 </div>
                 <div className="p-6 flex items-center justify-center">
                   <span className="text-sm font-medium text-slate-500 transition-colors group-hover:text-emerald-700">
-                    Добавить локацию
+                    {t('locations.addLocation')}
                   </span>
                 </div>
               </button>
@@ -115,7 +117,7 @@ export function HomeLocations() {
         <DialogContent className="max-w-2xl max-h-[90svh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {formMode === 'create' ? 'Новая локация' : 'Редактировать локацию'}
+              {formMode === 'create' ? t('locations.form.createTitle') : t('locations.form.editTitle')}
             </DialogTitle>
           </DialogHeader>
           <LocationForm

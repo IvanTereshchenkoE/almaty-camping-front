@@ -1,0 +1,22 @@
+{
+  "home": {
+    "title": "Almaty Camping — Tent Rental & Sales in Almaty",
+    "description": "Tent rental for camping in Almaty and region. Delivery, online booking, no deposit. 450 km around Almaty — from Kolsay to Altyn-Emel."
+  },
+  "catalog": {
+    "title": "Tent Catalog — Almaty Camping",
+    "description": "Wide selection of tents for rent and purchase in Almaty. Choose a tent for your route, season, and budget."
+  },
+  "order": {
+    "title": "Place Order — Almaty Camping",
+    "description": "Book tents and camping gear online. Fast, convenient, no deposit."
+  },
+  "myOrders": {
+    "title": "My Orders — Almaty Camping",
+    "description": "History of your tent and camping equipment rental orders."
+  },
+  "login": {
+    "title": "Admin Login — Almaty Camping",
+    "description": "Almaty Camping admin dashboard."
+  }
+}

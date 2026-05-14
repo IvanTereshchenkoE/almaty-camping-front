@@ -1,0 +1,72 @@
+{
+  "pageTitle": "Каталог палаток",
+  "pageSubtitle": "Выберите даты и подберите палатку под свои планы",
+  "sort": {
+    "label": "Сортировка:",
+    "availability": "Сначала доступные",
+    "priceAsc": "Сначала дешевле",
+    "priceDesc": "Сначала дороже",
+    "capacity": "По вместимости",
+    "weight": "По весу"
+  },
+  "found": "Найдено: {{count}} палаток",
+  "filters": "Фильтры",
+  "reset": "Сбросить",
+  "resetAll": "Сбросить всё",
+  "showResults": "Показать {{count}} палаток",
+  "error": "Не удалось загрузить палатки",
+  "retry": "Повторить",
+  "noResults": "Палатки не найдены",
+  "noResultsHint": "Попробуйте изменить даты или сбросить фильтры",
+  "pagination": {
+    "prev": "Назад",
+    "next": "Вперёд"
+  },
+  "card": {
+    "outOfStock": "Нет в наличии",
+    "inStock": "В наличии",
+    "people": "чел.",
+    "kg": "кг",
+    "noDescription": "Нет описания",
+    "available": "Доступно: {{available}} из {{total}}",
+    "pricePerDay": "{{price}} ₸/сутки",
+    "select": "Выбрать",
+    "unavailable": "Недоступно"
+  },
+  "detail": {
+    "description": "Описание",
+    "characteristics": "Характеристики",
+    "type": "Тип конструкции",
+    "season": "Сезон",
+    "weight": "Вес",
+    "capacity": "Вместимость",
+    "close": "Закрыть",
+    "totalFor": "Итого за {{days}} {{unit}}",
+    "chooseDates": "Выберите даты аренды"
+  },
+  "filtersPanel": {
+    "title": "Фильтры",
+    "price": "Цена",
+    "capacity": "Вместимость",
+    "season": "Сезон",
+    "type": "Тип конструкции",
+    "maxWeight": "Макс. вес",
+    "brand": "Бренд",
+    "from": "от",
+    "to": "до",
+    "person_one": "человек",
+    "person_few": "человека",
+    "person_many": "человек"
+  },
+  "datePanel": {
+    "title": "Даты аренды",
+    "subtitle": "Выберите период, чтобы проверить доступность",
+    "days": "Суток:"
+  },
+  "dateRange": {
+    "today": "Сегодня",
+    "tomorrow": "Завтра",
+    "week": "На неделю",
+    "weekend": "На выходные"
+  }
+}
